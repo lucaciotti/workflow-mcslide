@@ -1,0 +1,6 @@
+/* @import '../../../../vendor/filament/filament/resources/css/theme.css'; */
+@import '../../../../vendor/filafly/brisk/resources/css/theme.css';
+
+@source '../../../../app/Filament/Config/**/*';
+@source '../../../../resources/views/filament/config/**/*';
+@source '../../../../vendor/bezhansalleh/filament-panel-switch/resources/views/**/*.blade.php';
