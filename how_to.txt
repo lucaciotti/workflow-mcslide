@@ -94,6 +94,7 @@ sail composer require owen-it/laravel-auditing
 sail artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider" --tag="config"
 sail artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider" --tag="migrations"
 sail artisan migrate
+
 sail composer require tapp/filament-auditing:"^3.0"
 sail artisan vendor:publish --tag="filament-auditing-config"
 
