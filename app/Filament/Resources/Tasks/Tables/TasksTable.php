@@ -40,6 +40,7 @@ class TasksTable
         return $table
             ->columns([
                 TextColumn::make('type')
+                    ->label('Tipologia')
                     ->searchable(),
                 TextColumn::make('date')
                     ->date()
@@ -49,12 +50,14 @@ class TasksTable
                     ->sortable(),
                 TextColumn::make('customer_id')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 // TextColumn::make('shipping_address_id')
                 //     ->numeric()
                 //     ->sortable(),
                 TextColumn::make('carrier')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 // TextColumn::make('date_shipping')
                 //     ->date()
                 //     ->sortable(),

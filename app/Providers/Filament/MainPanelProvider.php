@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\Tasks\Widgets\TaskOverview;
 use App\Http\Middleware\RedirectIfNotFilamentAuthenticated;
 use Filafly\Themes\Brisk\BriskTheme;
 use Filament\Actions\Action;
@@ -50,15 +51,16 @@ class MainPanelProvider extends PanelProvider
             // ->viteTheme('resources/css/filament/resma_awin/theme.css')
             // ->plugin(FilamentAwinTheme::make())
             ->sidebarCollapsibleOnDesktop()
+            ->databaseNotifications(isLazy: true)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
-                Dashboard::class,
+                // Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
+                TaskOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,

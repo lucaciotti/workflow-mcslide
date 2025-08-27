@@ -31,10 +31,10 @@ class TaskResource extends Resource
         return TaskForm::configure($schema);
     }
 
-    // public static function infolist(Schema $schema): Schema
-    // {
-    //     return TaskInfolist::configure($schema);
-    // }
+    public static function infolist(Schema $schema): Schema
+    {
+        return TaskInfolist::configure($schema);
+    }
 
     public static function table(Table $table): Table
     {

@@ -49,6 +49,9 @@ sail artisan make:filament-user
 sail artisan make:notifications-table
 sail artisan migrate
 sail artisan queue:listen
+Notification::make()->title('Ordine modificato')->sendToDatabase(User::all());
+
+
 
 sail composer require joaopaulolndev/filament-edit-profile
 sail artisan vendor:publish --tag="filament-edit-profile-views"
