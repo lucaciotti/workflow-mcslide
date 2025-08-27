@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TaskTypes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use OwenIt\Auditing\Contracts\Auditable;
@@ -67,13 +68,13 @@ class Task extends Model implements Auditable
         return $this->hasMany(TaskAttributeValue::class);
     }
 
-    public function customer(): HasOne
+    public function customer(): BelongsTo
     {
-        return $this->hasOne(Customer::class);
+        return $this->belongsTo(Customer::class);
     }
 
-    public function productRange(): HasOne
+    public function productRange(): BelongsTo
     {
-        return $this->hasOne(ProductRange::class);
+        return $this->belongsTo(ProductRange::class);
     }
 }
