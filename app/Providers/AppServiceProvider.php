@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use BezhanSalleh\PanelSwitch\PanelSwitch;
+use Filament\Actions\Action;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -45,6 +48,20 @@ class AppServiceProvider extends ServiceProvider
             // This would result in an icon/image size of 128 pixels.
             $panelSwitch->iconSize(32);
             // $panelSwitch->canSwitchPanels(fn(): bool => auth()->user()?->can('switch_panels'));
+        });
+
+        Table::configureUsing(function (Table $table): void {
+            $table
+                ->reorderableColumns()
+                ->striped()
+                ->filtersTriggerAction(
+                    fn(Action $action) => $action
+                        ->slideOver()
+                        ->button(),
+                )
+                // ->filtersLayout(FiltersLayout::AboveContentCollapsible)
+                ->paginationPageOptions([10, 25, 50])
+                ->deferColumnManager(false);
         });
     }
 }

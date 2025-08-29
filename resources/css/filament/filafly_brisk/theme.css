@@ -4,3 +4,63 @@
 @source '../../../../app/Filament/Config/**/*';
 @source '../../../../resources/views/filament/config/**/*';
 @source '../../../../vendor/bezhansalleh/filament-panel-switch/resources/views/**/*.blade.php';
+
+:root {
+    --radius-3xl: 1rem;
+}
+
+.fi-ta-header-ctn {
+    --spacing: 0.18rem;
+}
+.fi-ta-cell {
+    --spacing: 0.18rem;
+}
+.fi-ta-selection-cell {
+    --spacing: 0.20rem;
+}
+.fi-ta-header-cell {
+    --spacing: 0.18rem;
+}
+.fi-pagination {
+    --spacing: 0.18rem;
+}
+.fi-modal-header {
+    --spacing: 0.18rem;
+}
+.fi-modal-content {
+    --spacing: 0.18rem;
+}
+.fi-modal-close-btn {
+    /* --spacing: 0.18rem; */
+    top: calc(var(--spacing) * 4);
+}
+.fi-fo-repeater-item-header {
+    --spacing: 0.18rem;
+}
+.fi-fo-repeater-item-content {
+    --spacing: 0.18rem;
+}
+.fi-fo-field {
+    --spacing: 0.18rem;
+}
+.fi-btn {
+    --spacing: 0.18rem;
+}
+.fi-sidebar {
+    --spacing: 0.18rem;
+}
+.fi-topbar {
+    --spacing: 0.20rem;
+}
+.fi-dropdown {
+    --spacing: 0.25rem;
+}
+.fi-dropdown-panel {
+    --spacing: 0.18rem;
+}
+.fi-icon-btn {
+    --spacing: 0.25rem;
+}
+.fi-icon {
+    --spacing: 0.25rem;
+}

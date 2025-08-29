@@ -40,7 +40,7 @@ class MainPanelProvider extends PanelProvider
             // ->registration()
             ->passwordReset()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Cyan,
             ])
             // Theme Default
             // ->viteTheme('resources/css/filament/default/theme.css')

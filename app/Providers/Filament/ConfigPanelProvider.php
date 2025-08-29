@@ -33,7 +33,7 @@ class ConfigPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => Color::Cyan,
             ])
             ->sidebarCollapsibleOnDesktop()
             ->viteTheme('resources/css/filament/filafly_brisk/theme.css')
