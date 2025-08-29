@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Actions\Action;
+use Filament\Panel as Panel;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Panel::configureUsing(function (Panel $panel): void {
+        //     $panel->maxContentWidth(Width::Full);
+        // });
         PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
             $panelSwitch->modalHeading('App');
             // $panelSwitch->panels(['admin','dev','app']);

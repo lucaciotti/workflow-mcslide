@@ -16,6 +16,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -82,7 +83,7 @@ class MainPanelProvider extends PanelProvider
                     ->shouldShowDeleteAccountForm(false)
             ])->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn() => Auth::user()->name.' (modifica profilo)')
+                    ->label(fn() => Auth::user()->name)
                     ->url(fn(): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle')
             ]);

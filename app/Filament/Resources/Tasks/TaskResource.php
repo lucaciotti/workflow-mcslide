@@ -22,7 +22,7 @@ class TaskResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static ?string $recordTitleAttribute = 'Ordini';
+    protected static ?string $recordTitleAttribute = 'num';
     protected static ?string $modelLabel = 'Ordine';
     protected static ?string $pluralModelLabel = 'Ordini';
 
@@ -53,7 +53,7 @@ class TaskResource extends Resource
         return [
             'index' => ListTasks::route('/'),
             'create' => CreateTask::route('/create'),
-            'view' => ViewTask::route('/{record}'),
+            // 'view' => ViewTask::route('/{record}'),
             'edit' => EditTask::route('/{record}/edit'),
         ];
     }

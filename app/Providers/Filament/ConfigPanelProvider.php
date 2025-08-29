@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Http\Middleware\RedirectIfNotFilamentAuthenticated;
 use Filafly\Themes\Brisk\BriskTheme;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -21,7 +22,10 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 
 class ConfigPanelProvider extends PanelProvider
 {
@@ -77,6 +81,16 @@ class ConfigPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 RedirectIfNotFilamentAuthenticated::class,
+            ])->plugins([
+                FilamentEditProfilePlugin::make()
+                    ->shouldShowEmailForm(false)
+                    ->shouldRegisterNavigation(false)
+                    ->shouldShowDeleteAccountForm(false)
+            ])->userMenuItems([
+                'profile' => Action::make('profile')
+                    ->label(fn() => Auth::user()->name)
+                    ->url(fn(): string => EditProfilePage::getUrl())
+                    ->icon('heroicon-m-user-circle')
             ]);
     }
 }
