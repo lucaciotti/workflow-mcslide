@@ -37,7 +37,7 @@ class CorePanel extends Panel
             // ->viteTheme('resources/css/filament/resma_awin/theme.css')
             // ->plugin(FilamentAwinTheme::make())
             ->defaultThemeMode(ThemeMode::Light)
-            // ->brandLogo(asset('images/logo.png'))
+            ->brandLogo(asset('images/McSlide_logo.png'))
             ->brandName('McSlide App')
             ->brandLogoHeight('8rem')
             ->sidebarCollapsibleOnDesktop()
@@ -47,7 +47,7 @@ class CorePanel extends Panel
             // ->registration()
             ->passwordReset()
             ->colors([
-                'primary' => Color::Red,
+                'primary' => Color::Teal,
             ])
             // ->maxContentWidth(Width::Full)
             // ->subNavigationPosition(SubNavigationPosition::Top)
