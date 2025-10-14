@@ -18,6 +18,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Support\Enums\Width;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Support\Facades\Auth;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
@@ -49,13 +50,13 @@ class CorePanel extends Panel
             ->colors([
                 'primary' => Color::Teal,
             ])
-            // ->maxContentWidth(Width::Full)
+            ->maxContentWidth(Width::Full)
             // ->subNavigationPosition(SubNavigationPosition::Top)
             ->plugins([
                 FilamentEditProfilePlugin::make()
                     ->shouldShowEmailForm(false)
                     ->shouldRegisterNavigation(false)
-                    ->shouldShowDeleteAccountForm(false)
+                    ->shouldShowDeleteAccountForm(false),
             ])
             ->userMenuItems([
                 'profile' => Action::make('profile')
