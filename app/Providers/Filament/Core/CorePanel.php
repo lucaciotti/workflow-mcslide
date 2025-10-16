@@ -20,7 +20,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Support\Enums\Width;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Support\Facades\Auth;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 
@@ -60,7 +59,7 @@ class CorePanel extends Panel
             ])
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn() => Auth::user()->name)
+                    ->label(fn() => auth()->user()->name)
                     ->url(fn(): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle')
             ])
