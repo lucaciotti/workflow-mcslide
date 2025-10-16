@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Actions\Action;
+use Filament\Livewire\Notifications;
 use Filament\Panel as Panel;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
@@ -68,5 +70,7 @@ class AppServiceProvider extends ServiceProvider
                 ->paginationPageOptions([10, 25, 50])
                 ->deferColumnManager(false);
         });
+
+        Notifications::alignment(Alignment::Center);
     }
 }
