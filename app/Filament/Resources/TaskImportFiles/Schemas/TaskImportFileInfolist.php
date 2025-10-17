@@ -9,19 +9,13 @@ class TaskImportFileInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema
+        return $schema->columns(3)
             ->components([
-                TextEntry::make('filename'),
-                TextEntry::make('path'),
-                TextEntry::make('status'),
-                TextEntry::make('date_upload')
+                TextEntry::make('status')->label('Stato'),
+                TextEntry::make('date_upload')->label('Data upload')
                     ->date(),
-                TextEntry::make('date_last_import')
+                TextEntry::make('date_last_import')->label('Data processato')
                     ->date(),
-                TextEntry::make('created_at')
-                    ->dateTime(),
-                TextEntry::make('updated_at')
-                    ->dateTime(),
             ]);
     }
 }

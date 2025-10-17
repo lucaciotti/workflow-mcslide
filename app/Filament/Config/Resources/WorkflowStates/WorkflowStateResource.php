@@ -54,9 +54,9 @@ class WorkflowStateResource extends Resource
     {
         return [
             'index' => ListWorkflowStates::route('/'),
-            'create' => CreateWorkflowState::route('/create'),
+            // 'create' => CreateWorkflowState::route('/create'),
             'view' => ViewWorkflowState::route('/{record}'),
-            'edit' => EditWorkflowState::route('/{record}/edit'),
+            // 'edit' => EditWorkflowState::route('/{record}/edit'),
         ];
     }
 }

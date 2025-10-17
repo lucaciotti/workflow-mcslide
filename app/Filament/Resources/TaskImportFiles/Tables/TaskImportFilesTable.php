@@ -2,12 +2,17 @@
 
 namespace App\Filament\Resources\TaskImportFiles\Tables;
 
+use App\Filament\Resources\TaskImportFiles\TaskImportFileResource;
+use App\Models\TaskImportFile;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
 
 class TaskImportFilesTable
 {
@@ -17,29 +22,24 @@ class TaskImportFilesTable
             ->columns([
                 TextColumn::make('filename')
                     ->searchable(),
-                TextColumn::make('path')
+                TextColumn::make('status')->label('Stato')
                     ->searchable(),
-                TextColumn::make('status')
-                    ->searchable(),
-                TextColumn::make('date_upload')
+                TextColumn::make('date_upload')->label('Data upload')
                     ->date()
                     ->sortable(),
-                TextColumn::make('date_last_import')
+                TextColumn::make('date_last_import')->label('Data processato')
                     ->date()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
+                Action::make('Righe file')
+                    ->icon(Heroicon::Bars4)
+                    ->url(fn(TaskImportFile $record): string => TaskImportFileResource::getUrl('rows', [
+                        'record' => $record->id,
+                    ])),
                 ViewAction::make(),
                 // EditAction::make(),
             ])

@@ -73,6 +73,11 @@ class Task extends Model implements Auditable
         return $this->belongsTo(Customer::class);
     }
 
+    public function shippingAddress(): BelongsTo
+    {
+        return $this->belongsTo(ShippingAddress::class);
+    }
+
     public function productRange(): BelongsTo
     {
         return $this->belongsTo(ProductRange::class);

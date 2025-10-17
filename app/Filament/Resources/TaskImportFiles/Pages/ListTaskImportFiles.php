@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TaskImportFiles\Pages;
 
 use App\Filament\Resources\TaskImportFiles\TaskImportFileResource;
+use App\Jobs\ImportTasks;
 use App\Models\TaskImportFile;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -33,18 +34,32 @@ class ListTaskImportFiles extends ListRecords
                 ])
                 ->action(function (array $data): void {
                     if (array_key_exists('filename', $data)){
-                        $date = Carbon::now();
-                        $file = $data['filename'];
-                        $extension = $file->getClientOriginalExtension();
-                        $newName = $date->format('Ymd') . '_' . $date->format('Hmi');
-                        $path = $file->storeAs('task_import_files', $newName . '.' . $extension);
-                        $extradata = [
-                            'status' => 'File Caricato',
-                            'path' => $path,
-                        ];
-                        $planImportFile = TaskImportFile::create(array_merge($data, $extradata));
-                        // $record->author()->associate($data['authorId']);
-                        // $record->save();
+                        try {
+                            $date = Carbon::now();
+                            $file = $data['filename'];
+                            $extension = $file->getClientOriginalExtension();
+                            $originalName = $file->getClientOriginalName();
+                            $newName = $date->format('Ymd') . '_' . $date->format('Hmi');
+                            $path = $file->storeAs('task_import_files', $newName . '.' . $extension);
+                            $savedata = [
+                                'status' => 'File Caricato',
+                                'path' => $path,
+                                'filename' => $originalName
+                            ];
+                            $taskImportFile = TaskImportFile::create($savedata);
+                            $recipient = auth()->user();
+                            ImportTasks::dispatch($taskImportFile->id)->onQueue('importFiles');
+                        Notification::make()
+                                ->title('Importazione Ordini')
+                                ->title('File '.$originalName.' caricato')
+                                ->sendToDatabase($recipient);
+                        } catch (\Throwable $th) {
+                            $recipient = auth()->user();
+                            Notification::make()
+                                ->title('Errore Importazione Ordini')
+                                ->body($th->getMessage())
+                                ->sendToDatabase($recipient);
+                        }
                     } else {
                         Notification::make()
                             ->title('Nessun file caricato!')
