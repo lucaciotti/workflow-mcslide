@@ -83,10 +83,8 @@ class TempTasksRelationManager extends RelationManager
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('customer.name')
-                    ->numeric()
                     ->sortable(),
-                TextColumn::make('shipping_address.name')
-                    ->numeric()
+                TextColumn::make('shippingAddress.name')
                     ->sortable(),
                 TextColumn::make('carrier')
                     ->searchable()
@@ -99,16 +97,7 @@ class TempTasksRelationManager extends RelationManager
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('product_range_id')
-                    ->numeric()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('workflow_state_id')
                     ->numeric()
                     ->sortable(),

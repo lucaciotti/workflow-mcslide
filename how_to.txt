@@ -109,3 +109,17 @@ https://stackoverflow.com/questions/57500648/laravel-orm-dynamic-model-attribute
 https://stackoverflow.com/questions/52551341/laravel-model-dynamic-attribute
 https://medium.com/@zulfikarditya/using-php-enums-in-laravel-12-a-comprehensive-guide-af75689f88e8
 sail artisan make:enum Enums/AttributeTypes
+
+
+
+
+
+# queue
+sail artisan queue:listen --queue=importFiles --timeout=0
+
+# resources
+sail artisan make:filament-resource TempTask --nested
+sail artisan make:filament-relation-manager TempTaskResource tempTaskRows
+
+# page ManageRelatedRecords
+sail artisan make:filament-page ManageTaskImportFileTempTask --resource=TaskImportFileResource --type=ManageRelatedRecords

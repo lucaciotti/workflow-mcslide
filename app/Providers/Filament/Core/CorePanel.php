@@ -18,6 +18,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Support\Enums\Width;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
@@ -43,6 +44,7 @@ class CorePanel extends Panel
             ->sidebarCollapsibleOnDesktop()
             ->unsavedChangesAlerts()
             ->databaseNotifications(isLazy: true)
+            ->subNavigationPosition(SubNavigationPosition::Top)
             ->login()
             // ->registration()
             ->passwordReset()

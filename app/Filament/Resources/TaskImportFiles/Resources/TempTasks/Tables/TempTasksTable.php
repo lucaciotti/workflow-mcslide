@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TaskImportFiles\Resources\TempTasks\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -27,11 +28,11 @@ class TempTasksTable
                 TextColumn::make('num')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('customer.name')
-                    ->numeric()
+                TextColumn::make('workFlowState.name')
                     ->sortable(),
-                TextColumn::make('shipping_address.name')
-                    ->numeric()
+                TextColumn::make('customer.name')
+                    ->sortable(),
+                TextColumn::make('shippingAddress.name')
                     ->sortable(),
                 TextColumn::make('carrier')
                     ->searchable()
@@ -43,19 +44,7 @@ class TempTasksTable
                 IconColumn::make('box_glass')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('product_range_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('workflow_state_id')
-                    ->numeric()
+                TextColumn::make('productRange.name')
                     ->sortable(),
                 IconColumn::make('imported')
                     ->boolean(),
@@ -73,12 +62,12 @@ class TempTasksTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                // EditAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 }

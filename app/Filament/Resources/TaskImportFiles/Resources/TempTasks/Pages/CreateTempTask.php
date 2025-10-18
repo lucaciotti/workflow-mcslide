@@ -8,4 +8,11 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTempTask extends CreateRecord
 {
     protected static string $resource = TempTaskResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()->createAnother(false),
+        ];
+    }
 }

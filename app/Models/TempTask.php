@@ -18,11 +18,6 @@ class TempTask extends Model
         return $this->hasMany(TempTaskRow::class);
     }
 
-    public function attributeValues(): HasMany
-    {
-        return $this->hasMany(TaskAttributeValue::class);
-    }
-
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -36,5 +31,10 @@ class TempTask extends Model
     public function productRange(): BelongsTo
     {
         return $this->belongsTo(ProductRange::class);
+    }
+
+    public function workFlowState(): BelongsTo
+    {
+        return $this->belongsTo(WorkflowState::class, 'workflow_state_id', 'id');
     }
 }

@@ -20,6 +20,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
+use UnitEnum;
 
 class TaskImportFileResource extends Resource
 {
@@ -27,7 +28,10 @@ class TaskImportFileResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentArrowUp;
 
+    protected static string | UnitEnum | null $navigationGroup = 'Import Ordini';
     protected static ?string $recordTitleAttribute = 'filename';
+    protected static ?string $modelLabel = 'Import Ordine';
+    protected static ?string $pluralModelLabel = 'Import Ordini';
 
     public static function form(Schema $schema): Schema
     {
@@ -53,8 +57,6 @@ class TaskImportFileResource extends Resource
             
         ];
     }
-
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::End;
 
     public static function getRecordSubNavigation(Page $page): array
     {
