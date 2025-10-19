@@ -8,9 +8,11 @@ use App\Models\ShippingAddress;
 use App\Models\TaskImportFile;
 use App\Models\TempTask;
 use App\Models\TempTaskRow;
+use App\Models\User;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
 use Carbon\Carbon;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
@@ -45,8 +47,14 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
      */
     public function collection(Collection $rows)
     {
+        $num_row = 1;
+        $new_state = [];
+        $state_no_workflow = [];
+
         foreach ($rows as $row) {
+            $num_row ++;
             $temptask_data = [];
+            $temptask_wheredata = [];
             $temptaskrow_data = [];
             $customer_data = [];
             $ship_address_data = [];
@@ -60,9 +68,12 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
             $temptask_data['num'] = (int)$row[2];
             $temptask_data['carrier'] = (int)$row[16];
             $temptask_data['date_shipping'] = Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[17]));
-            $temptask_data['box_glass'] = Str::contains(str::lower($row[18]), 'si') ? true : false;
-
+            // $temptask_data['box_glass'] = Str::contains(str::lower($row[18]), 'si') ? true : false;
+            $temptask_data['num_row'] = $num_row;
+            
             $temptaskrow_data['qty'] = (int)$row[12];
+            $temptaskrow_data['box_glass'] = Str::contains(str::lower($row[18]), 'si') ? true : false;
+            $temptaskrow_data['num_row'] = $num_row;
 
             $customer_data['code'] = (int)$row[3];
             $customer_data['name'] = (string)$row[4];
@@ -105,49 +116,68 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
                 if(WorkflowTransition::where('from_state_id', $workflow_state->id)->orWhere('to_state_id', $workflow_state->id)->exists()){
                     $temptask_data['workflow_state_id'] = $workflow_state->id;
                 } else {
-                    continue;
+                    if (!in_array($workflow_state_name, $new_state)) {
+                        array_push($new_state, $workflow_state_name);
+                    }
+                    $temptask_data['workflow_state_id'] = $workflow_state->id;
                 }
             } else {
-                continue;
+                $workflow_state = WorkflowState::create(['name' => $workflow_state_name]);
+                if ($workflow_state) {
+                    if(!in_array($workflow_state_name, $new_state) && !in_array($workflow_state_name, $state_no_workflow)){
+                        array_push($state_no_workflow, $workflow_state_name);
+                    }
+                    $temptask_data['workflow_state_id'] = $workflow_state->id;
+                } else {
+                    continue;
+                }
             }
 
-            $temptask = TempTask::create($temptask_data);
+            $temptask_wheredata = [
+                ['task_import_file_id', $temptask_data['task_import_file_id']],
+                ['num', $temptask_data['num']],
+                ['customer_id', $temptask_data['customer_id']],
+                ['date', $temptask_data['date']],
+                ['type', $temptask_data['type']],
+            ];
+            $temptask = TempTask::where($temptask_wheredata)->first();
             if($temptask) {
                 $temptaskrow_data['temp_task_id'] = $temptask->id;
             } else {
-                continue;
+                $temptask = TempTask::create($temptask_data);
+                if ($temptask) {
+                    $temptaskrow_data['temp_task_id'] = $temptask->id;
+                } else {
+                    continue;
+                }
             }
-            $temptaskrow = TempTaskRow::create($temptaskrow_data);
 
-                    // Controllo MATRICOLA -> unico dato che deve essere sempre corretto
-                    // if ($confRow->attribute->col_name == 'ibp_plan_matricola') {
-                    //     if (!preg_match('/S\d{6}/', $data)) {
-                    //         throw new ImportFileException('Attenzione la colonna ' . $confRow->cell_num . ' alla riga ' . $this->rowNum . ' deve contenere: "' . $confRow->attribute->label . '" con valore valido e non deve essere vuota!');
-                    //     }
-                    // }
-                    // if ($confRow->attribute->required && empty($row[$cell_num])) {
-                    //     // Log::error('Attenzione la colonna ' . $confRow->cell_num . ' alla riga ' . $this->rowNum . ' deve contenere: ' . $confRow->attribute->label . ' e non deve essere vuota!');
-                    //     throw new ImportFileException('Attenzione la colonna ' . $confRow->cell_num . ' alla riga ' . $this->rowNum . ' deve contenere: "' . $confRow->attribute->label . '" e non deve essere vuota!');
-                    // }
+            $temptaskrow = TempTaskRow::create($temptaskrow_data);
+        }
+        foreach ($new_state as $state_name) {
+            $recipient = User::whereHas('roles', fn($query) => $query->where('name', 'like', '%admin%'))->get();
+            Notification::make()
+                ->title('NUOVO STATO senza Workflow da Importazione Ordini')
+                ->body('Creato nuovo Stato da gestire: ' . $state_name)
+                ->sendToDatabase($recipient);
+        }
+        foreach ($state_no_workflow as $state_name) {
+            $recipient = User::whereHas('roles', fn($query) => $query->where('name', 'like', '%admin%'))->get();
+            Notification::make()
+                ->title('STATO senza Workflow da Importazione Ordini')
+                ->body('Stato da gestire: ' . $state_name)
+                ->sendToDatabase($recipient);
         }
     }
 
     public function onError(\Throwable $th)
     {
         report($th);
-        #INVIO NOTIFICA
-        $notifyUsers = User::whereHas('roles', fn($query) => $query->where('name', 'admin'))->orWhere('id', $this->importedfile->userCreated()->id)->get();
-        foreach ($notifyUsers as $user) {
-            Notification::send(
-                $user,
-                new DefaultMessageNotify(
-                    $title = 'File di Import - [' . $this->importedfile->filename . ']!',
-                    $body = 'Errore: [' . $th->getMessage() . ']',
-                    $link = '#',
-                    $level = 'error'
-                )
-            );
-        }
+        $recipient = $this->importedfile->audits()->get()->last()->user;
+        Notification::make()
+            ->title('Errore Importazione Ordini')
+            ->body($th->getMessage())
+            ->sendToDatabase($recipient);
     }
 
 

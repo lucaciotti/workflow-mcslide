@@ -41,13 +41,18 @@ class TempTaskRowsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                IconColumn::make('imported')
-                    ->boolean(),
+                TextColumn::make('num_row')
+                    ->numeric()
+                    ->sortable(),
                 TextColumn::make('productRange.name')
                     ->sortable(),
+                IconColumn::make('box_glass')
+                    ->boolean(),
                 TextColumn::make('qty')
                     ->numeric()
                     ->sortable(),
+                IconColumn::make('imported')
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

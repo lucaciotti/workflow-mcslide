@@ -48,7 +48,7 @@ class ListTaskImportFiles extends ListRecords
                             ];
                             $taskImportFile = TaskImportFile::create($savedata);
                             $recipient = auth()->user();
-                            ImportTasks::dispatch($taskImportFile->id)->onQueue('importFiles');
+                            ImportTasks::dispatch($taskImportFile->id)->onQueue('tasks');
                         Notification::make()
                                 ->title('Importazione Ordini')
                                 ->title('File '.$originalName.' caricato')

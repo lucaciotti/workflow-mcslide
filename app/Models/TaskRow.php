@@ -20,4 +20,9 @@ class TaskRow extends Model implements Auditable
     {
         return $this->belongsTo(Task::class);
     }
+
+    public function productRange(): BelongsTo
+    {
+        return $this->belongsTo(ProductRange::class);
+    }
 }

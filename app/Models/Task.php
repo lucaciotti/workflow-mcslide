@@ -82,4 +82,9 @@ class Task extends Model implements Auditable
     {
         return $this->belongsTo(ProductRange::class);
     }
+
+    public function workFlowState(): BelongsTo
+    {
+        return $this->belongsTo(WorkflowState::class, 'workflow_state_id', 'id');
+    }
 }

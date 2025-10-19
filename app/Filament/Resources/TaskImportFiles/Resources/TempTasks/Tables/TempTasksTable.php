@@ -26,11 +26,14 @@ class TempTasksTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('num')
+                    ->searchable()
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('workFlowState.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('shippingAddress.name')
                     ->sortable(),
