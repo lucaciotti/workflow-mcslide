@@ -44,12 +44,26 @@ class TaskImportFilesTable
                 // ViewAction::make(),
                 Action::make('Elabora')
                     ->icon(Heroicon::ArrowPath)
+                    ->color('warning')
                     ->requiresConfirmation()
                     ->modalHeading('Elabora nuovamente import')
                     ->modalDescription('Si desidera ri-processare l\'importazione?')
                     ->modalSubmitActionLabel('Si, procedi')
                     ->action(fn(TaskImportFile $record) => ProcessTempTasks::dispatch($record->id, $record->hasWarnings)->onQueue('tasks'))
-                    ->visible(fn(TaskImportFile $record) => in_array($record->status, ['Errore', 'Processato', 'Processing']))
+                    ->visible(fn(TaskImportFile $record) => in_array($record->status, ['Errore', 'Processato', 'Verificare'])),
+                Action::make('download') 
+                    ->label('Download')
+                    ->color('success')
+                    ->icon(Heroicon::ArrowDownTray)
+                    ->action(function (TaskImportFile $record) {
+                        return response()->download(storage_path('app/private/' . $record->path), $record->filename);
+                        // return response()->streamDownload(function () use ($record) {
+                        //     echo Pdf::loadHtml(
+                        //         Blade::render('pdf', ['record' => $record])
+                        //     )->stream();
+                        // }, $record->number . '.pdf');
+                    }), 
+
                 // EditAction::make(),
             ])
             ->toolbarActions([

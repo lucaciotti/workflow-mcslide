@@ -44,6 +44,7 @@ class CorePanel extends Panel
             ->sidebarCollapsibleOnDesktop()
             ->unsavedChangesAlerts()
             ->databaseNotifications(isLazy: true)
+            ->databaseNotificationsPolling('5s')
             ->subNavigationPosition(SubNavigationPosition::Top)
             ->login()
             // ->registration()

@@ -125,10 +125,13 @@ class ProcessTempTasks implements ShouldQueue
                 $task = Task::where($task_wheredata)->first();
                 if ($task != null) {
                     $temptask->task_id = $task->id;
-                    if ($task->audits->last()->user_id != null) {
-                        $temptask->warning = true;
-                        $temptask->error = 'Commessa già importata e modificata da utente!';
-                        $this->hasWarnings = true;
+                    try {
+                        if ($task->audits->last()->user_id != null) {
+                            $temptask->warning = true;
+                            $temptask->error = 'Commessa già importata e modificata da utente!';
+                            $this->hasWarnings = true;
+                        }
+                    } catch (\Throwable $th) {//throw $th;
                     }
                 }
                 if ($temptask->tempTaskRows->count() > 1) {

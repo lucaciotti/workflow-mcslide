@@ -67,7 +67,7 @@ class AppServiceProvider extends ServiceProvider
                         ->button(),
                 )
                 // ->filtersLayout(FiltersLayout::AboveContentCollapsible)
-                ->paginationPageOptions([10, 25, 50])
+                ->paginationPageOptions([25, 50, 100])
                 ->deferColumnManager(false);
         });
 
