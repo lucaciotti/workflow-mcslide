@@ -20,6 +20,9 @@ class TempTasksTable
                 TextColumn::make('num_row')
                     ->numeric()
                     ->sortable(),
+                IconColumn::make('warning')
+                    ->tooltip(fn($record) => $record->error)
+                    ->boolean(),
                 TextColumn::make('type')
                     ->searchable(),
                 TextColumn::make('date')
@@ -55,10 +58,6 @@ class TempTasksTable
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('selected')
-                    ->boolean(),
-                IconColumn::make('warning')
-                    ->boolean(),
             ])
             ->filters([
                 //
