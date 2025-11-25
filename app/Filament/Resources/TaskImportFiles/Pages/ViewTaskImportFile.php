@@ -13,6 +13,7 @@ use Filament\Support\Icons\Heroicon;
 class ViewTaskImportFile extends ViewRecord
 {
     protected static string $resource = TaskImportFileResource::class;
+    protected static ?string $navigationLabel = 'Info';
 
     protected function getHeaderActions(): array
     {
@@ -36,6 +37,16 @@ class ViewTaskImportFile extends ViewRecord
                         return response()->download(storage_path('app/private/' . $record->path), $record->filename);
                     }),
         ];
+    }
+
+    public function getContentTabLabel(): ?string
+    {
+        return 'Info';
+    }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
     }
 
 }

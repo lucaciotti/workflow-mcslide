@@ -62,7 +62,8 @@ class TaskImportFileResource extends Resource
     {
         return $page->generateNavigationItems([
             ViewTaskImportFile::class,
-            ManageTaskImportFileTempTask::class,
+            // ManageTaskImportFileTempTask::class,
+            TempTasksRelationManager::class
         ]);
     }
 
@@ -72,8 +73,8 @@ class TaskImportFileResource extends Resource
             'index' => ListTaskImportFiles::route('/'),
             'create' => CreateTaskImportFile::route('/create'),
             'view' => ViewTaskImportFile::route('/{record}'),
-            // 'edit' => EditTaskImportFile::route('/{record}/edit'),
-            'rows' => ManageTaskImportFileTempTask::route('/{record}/rows'),
+            'edit' => EditTaskImportFile::route('/{record}/edit'),
+            'rows' => TempTasksRelationManager::route('/{record}/rows'),
         ];
     }
 }

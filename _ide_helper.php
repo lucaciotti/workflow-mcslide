@@ -24901,6 +24901,14 @@ namespace Maatwebsite\Excel\Facades {
             }
     }
 
+namespace Ymsoft\FilamentTablePresets\Facades {
+    /**
+     * @see \Ymsoft\FilamentTablePresets\FilamentTablePresets
+     */
+    class FilamentTablePresets {
+            }
+    }
+
 namespace Illuminate\Support {
     /**
      * @template TKey of array-key
@@ -33412,6 +33420,7 @@ namespace  {
     class Agent extends \Jenssegers\Agent\Facades\Agent {}
     class Livewire extends \Livewire\Livewire {}
     class Excel extends \Maatwebsite\Excel\Facades\Excel {}
+    class FilamentTablePresets extends \Ymsoft\FilamentTablePresets\Facades\FilamentTablePresets {}
 }
 
 

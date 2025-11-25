@@ -143,7 +143,7 @@ class ProcessTempTasks implements ShouldQueue
                 $temptask->save();
             }
             if ($this->hasWarnings) {
-                $recipient = $this->importedfile->audits()->get()->last()->user;
+                $recipient = $this->importedfile->audits->where('user_id', '!=', null)->last()->user;
                 Notification::make()
                     ->warning()
                     ->title('Importazione Ordini da verificare!')
@@ -159,7 +159,7 @@ class ProcessTempTasks implements ShouldQueue
         $this->importedfile->status = 'Errore';
         $this->importedfile->save();
         report($th);
-        $recipient = $this->importedfile->audits()->get()->last()->user;
+        $recipient = $this->importedfile->audits->where('user_id', '!=', null)->last()->user;
         Notification::make()
             ->title('Errore Importazione Ordini')
             ->body($th->getMessage())

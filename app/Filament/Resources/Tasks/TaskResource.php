@@ -15,6 +15,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
 
 class TaskResource extends Resource
@@ -45,7 +47,7 @@ class TaskResource extends Resource
     public static function getRelations(): array
     {
         return [
-            AuditsRelationManager::make(),
+            // AuditsRelationManager::make(),
         ];
     }
 
@@ -58,4 +60,34 @@ class TaskResource extends Resource
             'edit' => EditTask::route('/{record}/edit'),
         ];
     }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['num', 'customer.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        /** @var Order $record */
+
+        return [
+            'Cliente' => optional($record->customer)->name,
+            'Data' => $record->date,
+            'Stato' => optional($record->workFlowState)->name,
+        ];
+    }
+    
+    /** @return Builder<Order> */
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['customer', 'workFlowState']);
+    }
+
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     /** @var class-string<Model> $modelClass */
+    //     $modelClass = static::$model;
+
+    //     return (string) $modelClass::where('status', 'new')->count();
+    // }
 }

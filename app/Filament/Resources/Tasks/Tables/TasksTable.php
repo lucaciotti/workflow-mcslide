@@ -12,7 +12,9 @@ use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class TasksTable
 {
@@ -48,24 +50,26 @@ class TasksTable
                 TextColumn::make('num')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('customer_id')
+                TextColumn::make('customer.name')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('shippingAddress.name')
                     ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                // TextColumn::make('shipping_address_id')
-                //     ->numeric()
-                //     ->sortable(),
-                TextColumn::make('carrier')
+                    ->toggleable(),
+                TextColumn::make('carrier.name')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                // TextColumn::make('date_shipping')
-                //     ->date()
-                //     ->sortable(),
-                // IconColumn::make('box_glass')
-                //     ->boolean(),
-                // TextColumn::make('product_range_id')
-                //     ->numeric()
-                //     ->sortable(),
+                    ->toggleable(),
+                TextColumn::make('productRange.name')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('date_shipping')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+                IconColumn::make('box_glass')
+                    ->boolean()
+                    ->toggleable(),
                 ...$attrRepeaters,
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -77,10 +81,18 @@ class TasksTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                DateRangeFilter::make('date')->label('Data Ordine'),
+                // DateRangeFilter::make('updated_at')->label('Data ultima modifica'),
+                SelectFilter::make('customer')->label('Clienti')
+                    ->relationship('customer', 'name')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('productRange_id')->label('Famiglia Prodotto')
+                    ->relationship('productRange', 'name')
+                    ->searchable(),
             ])
             ->recordActions([
-                ViewAction::make(),
+                // ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

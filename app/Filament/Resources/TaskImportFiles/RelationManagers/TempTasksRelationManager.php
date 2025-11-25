@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\TaskImportFiles\RelationManagers;
 
+use App\Filament\Resources\TaskImportFiles\TaskImportFileResource;
+use BackedEnum;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -14,15 +16,19 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class TempTasksRelationManager extends RelationManager
+class TempTasksRelationManager extends ManageRelatedRecords
 {
     protected static string $relationship = 'tempTasks';
+    protected static string $resource = TaskImportFileResource::class;
+
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left-ellipsis';
 
     public function form(Schema $schema): Schema
     {
@@ -63,6 +69,17 @@ class TempTasksRelationManager extends RelationManager
                     ->numeric(),
                 TextInput::make('workflow_state_id')
                     ->numeric(),
+            ]);
+    }
+
+
+    public function infolist(Schema $schema): Schema
+    {
+        return $schema
+            ->columns(1)
+            ->components([
+                TextEntry::make('num_row'),
+                TextEntry::make('customer.name'),
             ]);
     }
 

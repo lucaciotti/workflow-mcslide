@@ -13,17 +13,7 @@ class Task extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
-        'type',
-        'date',
-        'num',
-        'customer_id',
-        'shipping_address_id',
-        'carrier',
-        'date_shipping',
-        'box_glass',
-        'product_range_id',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {

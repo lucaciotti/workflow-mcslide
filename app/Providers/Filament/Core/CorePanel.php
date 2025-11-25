@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament\Core;
 
+use Asmit\ResizedColumn\ResizedColumnPlugin;
 use Filafly\Themes\Brisk\BriskTheme;
 use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
@@ -23,6 +24,8 @@ use Filament\Support\Enums\Width;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
+use WatheqAlshowaiter\FilamentStickyTableHeader\StickyTableHeaderPlugin;
+use Ymsoft\FilamentTablePresets\FilamentTablePresetPlugin;
 
 class CorePanel extends Panel
 {
@@ -55,6 +58,10 @@ class CorePanel extends Panel
             ->maxContentWidth(Width::Full)
             // ->subNavigationPosition(SubNavigationPosition::Top)
             ->plugins([
+                StickyTableHeaderPlugin::make(),
+                ResizedColumnPlugin::make(),
+                    // ->preserveOnDB(),
+                FilamentTablePresetPlugin::make(),
                 FilamentEditProfilePlugin::make()
                     ->shouldShowEmailForm(false)
                     ->shouldRegisterNavigation(false)

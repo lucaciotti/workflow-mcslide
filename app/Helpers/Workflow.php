@@ -15,6 +15,17 @@ class Workflow
         //
     }
 
+    public function getAllStates() {
+        $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
+        $states = $transitions
+            ->pluck('fromState')
+            ->filter(fn(?WorkflowState $state) => !is_null($state))
+            ->merge($transitions->pluck('toState'))
+            ->unique();
+
+        return $states;
+    }
+
     // Trasforma flusso per MaermaidJs
     public function mermaidFormat(): string
     {

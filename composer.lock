@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a372cc705ef81740029836026be96f92",
+    "content-hash": "43c8022b64ef416896555e3e25fb22ab",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -71,6 +71,53 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.4"
             },
             "time": "2025-07-30T15:45:57+00:00"
+        },
+        {
+            "name": "asmit/resized-column",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AsmitNepali/resized-column.git",
+                "reference": "a40a270cf77a7a2048051dbeb7b7168b17b58b49"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AsmitNepali/resized-column/zipball/a40a270cf77a7a2048051dbeb7b7168b17b58b49",
+                "reference": "a40a270cf77a7a2048051dbeb7b7168b17b58b49",
+                "shasum": ""
+            },
+            "require": {
+                "filament/support": "^3.2|^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Asmit\\ResizedColumn\\ResizedColumnServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Asmit\\ResizedColumn\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "AsmitNepali",
+                    "email": "mail2asmitnepali@gmail.com"
+                }
+            ],
+            "description": "Resizeable column for filament",
+            "support": {
+                "issues": "https://github.com/AsmitNepali/resized-column/issues",
+                "source": "https://github.com/AsmitNepali/resized-column/tree/v1.1.0"
+            },
+            "time": "2025-08-13T14:21:50+00:00"
         },
         {
             "name": "bezhansalleh/filament-panel-switch",
@@ -4335,6 +4382,71 @@
                 }
             ],
             "time": "2025-07-17T11:15:13+00:00"
+        },
+        {
+            "name": "malzariey/filament-daterangepicker-filter",
+            "version": "4.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/malzariey/filament-daterangepicker-filter.git",
+                "reference": "da819c35b603f991697a3a84806bb76d954d6479"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/malzariey/filament-daterangepicker-filter/zipball/da819c35b603f991697a3a84806bb76d954d6479",
+                "reference": "da819c35b603f991697a3a84806bb76d954d6479",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0|^11.0|^12.0",
+                "spatie/laravel-package-tools": "^1.16.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FilamentDaterangepickerFilter": "Malzariey\\FilamentDaterangepickerFilter\\Facades\\FilamentDaterangepickerFilter"
+                    },
+                    "providers": [
+                        "Malzariey\\FilamentDaterangepickerFilter\\FilamentDaterangepickerFilterServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Malzariey\\FilamentDaterangepickerFilter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Majid Al-Zariey",
+                    "email": "malzariey@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This package uses daterangepciker library to filter date by a range or predefined date ranges (Today , Yesterday ...etc)",
+            "homepage": "https://github.com/malzariey/filament-daterangepicker-filter",
+            "keywords": [
+                "Malzariey",
+                "filament-daterangepicker-filter",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/malzariey/filament-daterangepicker-filter/issues",
+                "source": "https://github.com/malzariey/filament-daterangepicker-filter/tree/4.0.6"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Malzariey",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-08-14T13:55:34+00:00"
         },
         {
             "name": "markbaker/complex",
@@ -10087,6 +10199,72 @@
             "time": "2024-11-21T01:49:47+00:00"
         },
         {
+            "name": "watheqalshowaiter/filament-sticky-table-header",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WatheqAlshowaiter/filament-sticky-table-header.git",
+                "reference": "5b57df21f6b43e595eaa95f082cfbdad928c96e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WatheqAlshowaiter/filament-sticky-table-header/zipball/5b57df21f6b43e595eaa95f082cfbdad928c96e9",
+                "reference": "5b57df21f6b43e595eaa95f082cfbdad928c96e9",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0|^4.0",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^8.0||^7.0",
+                "orchestra/testbench": "^8.0|^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WatheqAlshowaiter\\FilamentStickyTableHeader\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Watheq Alshowaiter",
+                    "email": "watheq.alshowaiter@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Filament plugin that makes table headers stick when scrolling down for better UX.",
+            "homepage": "https://github.com/watheqalshowaiter/filament-sticky-table-header",
+            "keywords": [
+                "Watheq Alshowaiter",
+                "WatheqAlshowaiter",
+                "admin-panel",
+                "filament",
+                "filament-plugin",
+                "laravel",
+                "scroll",
+                "sticky-header",
+                "table",
+                "ui"
+            ],
+            "support": {
+                "issues": "https://github.com/watheqalshowaiter/filament-sticky-table-header/issues",
+                "source": "https://github.com/watheqalshowaiter/filament-sticky-table-header"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/WatheqAlshowaiter",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-11-24T19:58:41+00:00"
+        },
+        {
             "name": "webmozart/assert",
             "version": "1.11.0",
             "source": {
@@ -10143,6 +10321,84 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "ymsoft/filament-table-presets",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yarmat/filament-table-presets.git",
+                "reference": "1363605515ef98238c8fea4189358d4750d8a625"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yarmat/filament-table-presets/zipball/1363605515ef98238c8fea4189358d4750d8a625",
+                "reference": "1363605515ef98238c8fea4189358d4750d8a625",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "illuminate/contracts": "^11.28||^12.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.8",
+                "orchestra/testbench": "^10.6",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FilamentTablePresets": "Ymsoft\\FilamentTablePresets\\Facades\\FilamentTablePresets"
+                    },
+                    "providers": [
+                        "Ymsoft\\FilamentTablePresets\\FilamentTablePresetsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ymsoft\\FilamentTablePresets\\": "src/",
+                    "Ymsoft\\FilamentTablePresets\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "YarmaT",
+                    "email": "support@ymsoft.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Filament plugin to save and load table presets",
+            "homepage": "https://github.com/ymsoft/filament-table-presets",
+            "keywords": [
+                "filament-table-presets",
+                "laravel",
+                "ymsoft"
+            ],
+            "support": {
+                "issues": "https://github.com/yarmat/filament-table-presets/issues",
+                "source": "https://github.com/yarmat/filament-table-presets/tree/0.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ymsoft",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-10-25T10:28:25+00:00"
         }
     ],
     "packages-dev": [

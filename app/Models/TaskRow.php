@@ -10,11 +10,7 @@ class TaskRow extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
-        'task_id',
-        'product_range_id',
-        'qty'
-    ];
+    protected $guarded = ['id'];
 
     public function task(): BelongsTo
     {
