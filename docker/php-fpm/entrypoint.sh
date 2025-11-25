@@ -13,13 +13,24 @@ if [ ! "$(ls -A /var/www/storage)" ]; then
 fi
 
 # Remove storage-init directory
-rm -rf /var/www/storage-init
+
+# Copy public directory if empty
+# -----------------------------------------------------------
+if [  "$(ls -A /var/www/public-init)" ]; then
+  echo "Deploying public directory..."
+  cp -R /var/www/public-init/. /var/www/public
+  chown -fR www-data:www-data /var/www/public
+fi
+
+# Remove storage-init directory
+rm -rf /var/www/public-init
 
 # Run Laravel migrations
 # -----------------------------------------------------------
 # Ensure the database schema is up to date.
 # -----------------------------------------------------------
 php artisan migrate --force
+php artisan storage:link
 
 # Clear and cache configurations
 # -----------------------------------------------------------

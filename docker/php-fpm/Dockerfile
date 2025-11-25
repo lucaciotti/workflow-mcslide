@@ -16,7 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libicu-dev \
     libzip-dev \
-    && docker-php-ext-install -j$(nproc) \
+    zlib1g-dev \
+    libpng-dev 
+RUN docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     pdo_pgsql \
     pgsql \
@@ -25,9 +27,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     bcmath \
     soap \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    mbstring \
+    gd
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Set the working directory inside the container
 WORKDIR /var/www
@@ -101,6 +105,7 @@ RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-doc
 
 # Copy the application code and dependencies from the build stage
 COPY --from=builder /var/www /var/www
+COPY --from=builder /var/www/public /var/www/public-init
 
 # Set working directory
 WORKDIR /var/www
