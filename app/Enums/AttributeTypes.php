@@ -2,7 +2,10 @@
 
 namespace App\Enums;
 
-enum AttributeTypes: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum AttributeTypes: string implements HasLabel, HasColor
 {
     case NUM = 'num';
     case STRING = 'string';
@@ -29,6 +32,28 @@ enum AttributeTypes: string
             self::BOOL => 'green',
             self::DATE => 'green',
             self::NOTE => 'green',
+        };
+    }
+
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::NUM => 'Numerico',
+            self::STRING => 'Alfanumerico',
+            self::BOOL => 'Logico',
+            self::DATE => 'Data',
+            self::NOTE => 'Note',
+        };
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::NUM => 'info',
+            self::STRING => 'success',
+            self::BOOL => 'primary',
+            self::DATE => 'warning',
+            self::NOTE => 'danger',
         };
     }
 

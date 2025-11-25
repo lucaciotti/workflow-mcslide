@@ -2,7 +2,10 @@
 
 namespace App\Enums;
 
-enum TaskTypes: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum TaskTypes: string implements HasLabel, HasColor
 {
     case ORD = 'ord';
     case SOST = 'sost';
@@ -22,6 +25,23 @@ enum TaskTypes: string
             self::SOST => 'red',
         };
     }
+
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::ORD => 'Ordine',
+            self::SOST => 'Sostituzione'
+        };
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::ORD => 'info',
+            self::SOST => 'danger',
+        };
+    }
+
     public static function labels(): array
     {
         return array_map(fn($category) => $category->label(), self::cases());

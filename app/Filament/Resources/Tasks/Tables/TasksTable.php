@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tasks\Tables;
 
+use App\Enums\TaskTypes;
 use App\Models\Attribute;
 use App\Models\AttributeCategory;
 use Filament\Actions\BulkActionGroup;
@@ -43,6 +44,7 @@ class TasksTable
             ->columns([
                 TextColumn::make('type')
                     ->label('Tipologia')
+                    ->badge()
                     ->searchable(),
                 TextColumn::make('date')
                     ->date()
@@ -81,6 +83,8 @@ class TasksTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('type')->label('Tipologia')
+                    ->options(TaskTypes::class),
                 DateRangeFilter::make('date')->label('Data Ordine'),
                 // DateRangeFilter::make('updated_at')->label('Data ultima modifica'),
                 SelectFilter::make('customer')->label('Clienti')
