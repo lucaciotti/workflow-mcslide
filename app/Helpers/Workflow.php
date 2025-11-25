@@ -29,7 +29,14 @@ class Workflow
     // Trasforma flusso per MaermaidJs
     public function mermaidFormat(): string
     {
-        $mermaid = "flowchart TB\n";
+        $mermaid = "";
+        $base_theme = config('mermaid.theme') ?? 'default';
+        if (in_array($base_theme, ['base', 'forest', 'dark', 'neutral', 'default'])) {
+            $mermaid = "%%{\n
+                init: {\"theme\": \"$base_theme\"}
+                }%%\n";
+        }
+        $mermaid .= "flowchart TB\n";
         $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
 
         $states = $transitions

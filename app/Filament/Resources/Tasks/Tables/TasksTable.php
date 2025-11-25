@@ -5,11 +5,17 @@ namespace App\Filament\Resources\Tasks\Tables;
 use App\Enums\TaskTypes;
 use App\Models\Attribute;
 use App\Models\AttributeCategory;
+use App\Models\Task;
+use App\Models\WorkflowState;
+use App\Models\WorkflowTransition;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Support\Enums\Alignment;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -99,7 +105,31 @@ class TasksTable
                     ->searchable(),
             ])
             ->recordActions([
-                // ViewAction::make(),
+            // ViewAction::make(),
+                Action::make('transition')->label('Modifica Stato       ')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
+                    ->schema([
+                        Select::make('state_id')
+                            ->searchable()
+                            ->options(function (Task $record): array {
+                                $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
+                                $states = $transitions
+                                    ->pluck('fromState')
+                                    ->filter(fn(?WorkflowState $state) => !is_null($state))
+                                    ->merge($transitions->pluck('toState'))
+                                    ->unique();
+                                $states_ids = $states->pluck('id')->toArray();
+                                if (in_array($record->workflow_state_id, $states_ids)) {
+                                    return WorkflowTransition::query()->with(['fromState', 'toState'])->where('from_state_id', $record->workflow_state_id)->get()->pluck('toState.name', 'toState.id')->toArray();
+                                } else {
+                                    return WorkflowState::query()->pluck('name', 'id')->toArray();
+                                }
+                            })
+                    ])
+                    ->action(function (array $data, Task $record) {
+                        // dd((int) $data['state_id']);
+                        $record->workflow_state_id = (int) $data['state_id'];
+                        $record->save();
+                    }),
                 EditAction::make(),
             ])
             ->toolbarActions([

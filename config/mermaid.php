@@ -13,7 +13,7 @@ return [
     // Mermaid theme to use for the diagram.
     // First Party Mermaid themes: 'default', 'forest', 'dark', 'neutral', 'base'.
     // To a custom theme file in the themes directory set to 'custom'.
-    'theme' => 'default',
+    'theme' => 'base',
 
     // Custom theme file to use for the diagram.
     // Must be a valid JSON file in the themes directory.
