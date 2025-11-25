@@ -35,11 +35,11 @@ class ViewWorkflow extends Action
 
         $this->modalCancelAction(false);
 
-        $this->stickyModalHeader();
+        // $this->stickyModalHeader();
 
         $this->label('Workflow');
 
-        $this->modalHeading('Workflow Editor');
+        $this->modalHeading('Workflow');
 
         $this->workflow = new Workflow;
         $diagram = $this->workflow->mermaidFormat();
@@ -52,11 +52,11 @@ class ViewWorkflow extends Action
         return 'workflow-editor';
     }
 
-    public function workflow(bool | Closure $workflow): static
-    {
-        $this->workflow = new Workflow;
+    // public function workflow(bool | Closure $workflow): static
+    // {
+    //     $this->workflow = new Workflow;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tasks\Pages;
 
+use App\Filament\Actions\ViewWorkflow;
 use App\Filament\Imports\TaskImporter;
 use App\Filament\Resources\TaskImportFiles\TaskImportFileResource;
 use App\Filament\Resources\Tasks\TaskResource;
@@ -56,8 +57,9 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
     {
         return [
             // CreateAction::make('Importa')->label('Importa'),
+            ViewWorkflow::make(),
             Action::make('Importa')->label('Importa')->url(TaskImportFileResource::getUrl()),
-            ManageTablePresetAction::make(),
+            ManageTablePresetAction::make()->label('')->outlined(),
             // ImportAction::make()->importer(TaskImporter::class)
         ];
     }

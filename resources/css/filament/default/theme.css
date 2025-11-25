@@ -24,7 +24,9 @@
 .fi-ta-text {
     --spacing: 0.18rem;
 }
-
+.fi-ta-toggle {
+    --spacing: 0.18rem;
+}
 .fi-ta-selection-cell {
     --spacing: 0.20rem;
 }
