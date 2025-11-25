@@ -20,6 +20,7 @@
         "maatwebsite/excel": "^3.1",
         "malzariey/filament-daterangepicker-filter": "^4.0",
         "owen-it/laravel-auditing": "^14.0",
+        "pxlrbt/filament-excel": "^3.2",
         "resma/filament-awin-theme": "^1.0",
         "tapp/filament-auditing": "^4.0",
         "tomatophp/filament-users": "^4.0",

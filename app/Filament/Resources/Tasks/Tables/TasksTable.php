@@ -22,6 +22,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
+use pxlrbt\FilamentExcel\Actions\ExportAction;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class TasksTable
 {
@@ -52,33 +55,33 @@ class TasksTable
                     ->label('Tipologia')
                     ->badge()
                     ->searchable(),
-                TextColumn::make('workFlowState.name')
+                TextColumn::make('workFlowState.name')->label('Stato')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('num')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('date')
+                TextColumn::make('date')->label('Data')
                     ->date()
                     ->sortable(),
-                TextColumn::make('customer.name')
+                TextColumn::make('customer.name')->label('Cliente')
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('shippingAddress.name')
+                TextColumn::make('shippingAddress.name')->label('Ind.Spedizione')
                     ->numeric()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('carrier.name')
+                TextColumn::make('carrier.name')->label('Vettore')
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('productRange.name')
+                TextColumn::make('productRange.name')->label('Fam.Prodotto')
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('date_shipping')
+                TextColumn::make('date_shipping')->label('Data Spedizione')
                     ->date()
                     ->sortable()
                     ->toggleable(),
-                IconColumn::make('box_glass')
+                IconColumn::make('box_glass')->label('Vetro')
                     ->boolean()
                     ->toggleable(),
                 ...$attrRepeaters,
@@ -133,6 +136,15 @@ class TasksTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                ExportAction::make()->exports([
+                    ExcelExport::make()->fromTable()->except([
+                        'created_at',
+                        'updated_at',
+                    ])->ignoreFormatting([
+                        'date',
+                        'num'
+                    ]),
+                ]),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
