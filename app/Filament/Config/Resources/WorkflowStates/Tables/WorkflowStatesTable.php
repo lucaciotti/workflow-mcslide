@@ -21,6 +21,8 @@ class WorkflowStatesTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('workFlowStateCategory.name')->label('Categoria')
+                    ->searchable(),
                 IconColumn::make('is_gate')
                     ->boolean(),
                 TextColumn::make('gate_days')
@@ -42,7 +44,7 @@ class WorkflowStatesTable
                 ]),
             ])
             ->recordActions([
-                ViewAction::make(),
+                // ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

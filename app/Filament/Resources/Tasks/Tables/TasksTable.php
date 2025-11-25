@@ -46,11 +46,14 @@ class TasksTable
                     ->label('Tipologia')
                     ->badge()
                     ->searchable(),
-                TextColumn::make('date')
-                    ->date()
-                    ->sortable(),
+                TextColumn::make('workFlowState.name')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('num')
                     ->numeric()
+                    ->sortable(),
+                TextColumn::make('date')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('customer.name')
                     ->sortable()

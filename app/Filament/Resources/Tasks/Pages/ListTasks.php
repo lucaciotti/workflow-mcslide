@@ -67,21 +67,54 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
         $workflowStates = (new Workflow)->getAllStates();
         $statesNotWorkflow = WorkflowState::whereNotIn('id', $workflowStates->pluck('id'))->get();
         $tabs = ['Tutti' => Tab::make()];
+        $workFlowStateCategory = [];
+        $existWorflowStatesWithoutCategory = false;
         foreach ($workflowStates as $state) {
-            $count = Task::query()->where('workflow_state_id', $state->id)->count();
-            $tabs[$state->name] = Tab::make()
+            if($state->workFlowStateCategory){
+                if (!in_array($state->workFlowStateCategory, $workFlowStateCategory, true)) {
+                    array_push($workFlowStateCategory, $state->workFlowStateCategory);
+                }
+            } else {
+                $existWorflowStatesWithoutCategory = true;
+            }
+        }
+        foreach ($workFlowStateCategory as $stateCategory) {
+            $count = Task::query()->whereHas('workFlowState', function ($q) use ($stateCategory) {
+                $q->where('workflow_state_category_id', $stateCategory->id);
+            })->count();
+            $tabs[$stateCategory->name] = Tab::make()
                 ->badge($count)
                 ->visible($count>0)
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('workflow_state_id', $state->id));
+                ->modifyQueryUsing(fn(Builder $query) => $query->whereHas('workFlowState', function ($q) use ($stateCategory) {
+                $q->where('workflow_state_category_id', $stateCategory->id);
+            }));
         }
-        foreach ($statesNotWorkflow as $state) {
-            $count = Task::query()->where('workflow_state_id', $state->id)->count();
-            $tabs[$state->name] = Tab::make()
+        if($existWorflowStatesWithoutCategory){
+            $count = Task::query()->whereNotIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->whereHas('workFlowState', function ($q) {
+                $q->where('workflow_state_category_id', null);
+            })->count();
+            $tabs['Senza Categoria!'] = Tab::make()
                 ->badge($count)
-                ->badgeColor('danger')
-                ->visible($count>0)
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('workflow_state_id', $state->id));
+                ->badgeColor('warning')
+                ->visible($count > 0)
+                ->modifyQueryUsing(fn(Builder $query) => $query->whereNotIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->whereHas('workFlowState', function ($q) {
+                    $q->where('workflow_state_category_id', null);
+                }));
         }
+        // foreach ($statesNotWorkflow as $state) {
+        //     $count = Task::query()->where('workflow_state_id', $state->id)->count();
+        //     $tabs[$state->name] = Tab::make()
+        //         ->badge($count)
+        //         ->badgeColor('danger')
+        //         ->visible($count>0)
+        //         ->modifyQueryUsing(fn(Builder $query) => $query->where('workflow_state_id', $state->id));
+        // }
+        $count = Task::query()->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->count();
+        $tabs['WORKFLOW ASSENTE!'] = Tab::make()
+            ->badge($count)
+            ->badgeColor('danger')
+            ->visible($count>0)
+            ->modifyQueryUsing(fn(Builder $query) => $query->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id')));
         return $tabs;
     }
 }

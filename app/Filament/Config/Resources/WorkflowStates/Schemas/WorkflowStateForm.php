@@ -19,6 +19,15 @@ class WorkflowStateForm
                 TextInput::make('name')
                     ->label('Nome Stato')
                     ->required(),
+                Select::make('workflow_state_category_id')->label('Categoria')
+                    ->relationship('workFlowStateCategory', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                    ]),
                 Section::make('Gestione Gate')->schema([
                     Toggle::make('is_gate')->live(),
                     TextInput::make('gate_days')

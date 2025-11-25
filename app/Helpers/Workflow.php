@@ -38,6 +38,8 @@ class Workflow
             ->merge($transitions->pluck('toState'))
             ->unique();
 
+        $grouped_states = $states->groupBy('workFlowStateCategory.name');
+        $ids_states_grouped = [];
         // $mermaid .= "subgraph One\n";
         // $mermaid .= "22(Start)\n";
         // $mermaid .= "23(Start)\n";
@@ -45,7 +47,19 @@ class Workflow
         // $mermaid .= "25(Start)\n";
         // $mermaid .= "end\n";
         // $mermaid .= "24 --> 23\n";
-        foreach ($states as $state) {
+        foreach ($grouped_states as $group_state => $groupped_states) {
+            if ($group_state){
+                $mermaid .= "subgraph " . $group_state . "\n";
+                foreach ($groupped_states as $state) {
+                    $mermaid .= $state->id . "(" . $state->name . ")\n";
+                    array_push($ids_states_grouped, $state->id);
+                }
+                $mermaid .= "end \n";
+            }
+        }
+        $state_not_grouped = $states->whereNotIn('id', $ids_states_grouped);
+        // $state_not_grouped = $states->filter(fn(?WorkflowState $state) => !in_array($state->id, $ids_states_grouped));
+        foreach ($state_not_grouped as $state) {
             $mermaid .= $state->id . "(" . $state->name . ")\n";
         }
 
