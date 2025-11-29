@@ -104,6 +104,8 @@ RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-doc
 #RUN sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/' "$PHP_INI_DIR/php.ini"
 
 # Copy the application code and dependencies from the build stage
+# COPY --chown=www-data:www-data --from=builder /var/www /var/www
+# COPY --chown=www-data:www-data --from=builder /var/www/public /var/www/public-init
 COPY --chown=www-data:www-data --from=builder /var/www /var/www
 COPY --chown=www-data:www-data --from=builder /var/www/public /var/www/public-init
 
@@ -111,7 +113,7 @@ COPY --chown=www-data:www-data --from=builder /var/www/public /var/www/public-in
 WORKDIR /var/www
 
 # Ensure correct permissions
-# RUN chown -R www-data:www-data /var/www
+RUN chown -R www-data:www-data /var/www
 
 # Switch to the non-privileged user to run the application
 USER www-data
