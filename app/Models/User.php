@@ -50,4 +50,13 @@ class User extends Authenticatable implements Auditable
             'password' => 'hashed',
         ];
     }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($panel->getId() === 'config' || $panel->getId() === 'admin') {
+            return $this->hasRole('admin') ||  $this->hasRole('super_admin');
+        }
+
+        return true;
+    }
 }
