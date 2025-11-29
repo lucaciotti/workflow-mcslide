@@ -23,7 +23,7 @@ if [  "$(ls -A /var/www/public-init)" ]; then
 fi
 
 # Remove storage-init directory
-rm -rf /var/www/public-init
+# rm -rf /var/www/public-init
 
 # Run Laravel migrations
 # -----------------------------------------------------------
