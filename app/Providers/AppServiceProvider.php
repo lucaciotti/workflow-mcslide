@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     {
         if ($this->app->environment('production')) {
             \URL::forceScheme('https');
+            request()->server->set('HTTPS', request()->header('X-Forwarded-Proto', 'https') == 'https' ? 'on' : 'off');
         }
         // Panel::configureUsing(function (Panel $panel): void {
         //     $panel->maxContentWidth(Width::Full);
