@@ -16,6 +16,7 @@ use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -137,36 +138,51 @@ class TaskForm
                     ]),
                 Toggle::make('box_glass')->label('Vetro'),
                 ]),
-                Section::make('Stato')->schema([
-                    Select::make('workflow_state_id')->hiddenLabel()
-                        ->relationship('workFlowState', 'name')
-                        ->disabled(true)
-                        ->searchable()
-                        ->preload(),
-                    Action::make('transition')->label('Modifica Stato       ')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
-                        ->schema([
-                        Select::make('state_id')
+                Section::make('Gestione')->schema([
+                    Fieldset::make('Stato')->schema([
+                        Select::make('workflow_state_id')->hiddenLabel()
+                            ->relationship('workFlowState', 'name')
+                            ->disabled(true)
                             ->searchable()
-                            ->options(function (Task $record): array {
-                                $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
-                                $states = $transitions
-                                    ->pluck('fromState')
-                                    ->filter(fn(?WorkflowState $state) => !is_null($state))
-                                    ->merge($transitions->pluck('toState'))
-                                    ->unique();
-                                $states_ids = $states->pluck('id')->toArray();
-                                if(in_array($record->workflow_state_id, $states_ids)){
-                                    return WorkflowTransition::query()->with(['fromState', 'toState'])->where('from_state_id', $record->workflow_state_id)->get()->pluck('toState.name', 'toState.id')->toArray();
-                                } else {
-                                    return WorkflowState::query()->pluck('name', 'id')->toArray();
-                                }
-                            })
-                        ])
-                        ->action(function (array $data, Task $record) {
-                            // dd((int) $data['state_id']);
-                            $record->workflow_state_id = (int) $data['state_id'];
-                            $record->save();
-                        }),
+                            ->preload(),
+                        Action::make('transition')->label('Modifica Stato       ')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
+                            ->schema([
+                                Select::make('state_id')
+                                    ->searchable()
+                                    ->options(function (Task $record): array {
+                                        $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
+                                        $states = $transitions
+                                            ->pluck('fromState')
+                                            ->filter(fn(?WorkflowState $state) => !is_null($state))
+                                            ->merge($transitions->pluck('toState'))
+                                            ->unique();
+                                        $states_ids = $states->pluck('id')->toArray();
+                                        if(in_array($record->workflow_state_id, $states_ids)){
+                                            return WorkflowTransition::query()->with(['fromState', 'toState'])->where('from_state_id', $record->workflow_state_id)->get()->pluck('toState.name', 'toState.id')->toArray();
+                                        } else {
+                                            return WorkflowState::query()->pluck('name', 'id')->toArray();
+                                        }
+                                    })
+                            ])
+                            ->action(function (array $data, Task $record) {
+                                // dd((int) $data['state_id']);
+                                $record->workflow_state_id = (int) $data['state_id'];
+                                $record->save();
+                            }),
+                    ]),
+                    Fieldset::make('Mancanti')->schema([
+                        Action::make('mancanti')->label('Dichiara Codici Mancanti')->outlined()->extraAttributes(['class' >= 'w-full'])->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
+                            ->schema([
+                                TextInput::make('codice')
+                                ->required()
+                                ->maxLength(255),
+                            ])
+                            ->action(function (array $data, Task $record) {
+                                // dd((int) $data['state_id']);
+                                // $record->workflow_state_id = (int) $data['state_id'];
+                                // $record->save();
+                            }),
+                    ]),
                 ]),
                 ...$attrRepeaters
                 
