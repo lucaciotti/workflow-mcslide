@@ -25,6 +25,7 @@ use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\ExportAction;
 use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Ymsoft\FilamentTablePresets\Filament\Actions\ManageTablePresetAction;
 
 class TasksTable
 {
@@ -136,6 +137,9 @@ class TasksTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
                 ExportAction::make()->exports([
                     ExcelExport::make()->fromTable()->except([
                         'created_at',
@@ -145,9 +149,7 @@ class TasksTable
                         'num'
                     ]),
                 ]),
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                ManageTablePresetAction::make()->label('')->outlined(),
             ]);
     }
 }

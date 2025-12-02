@@ -70,8 +70,14 @@ class AppServiceProvider extends ServiceProvider
                         ->slideOver()
                         ->button(),
                 )
+                // ->columnManagerTriggerAction(
+                //     fn (Action $action) => $action
+                //         ->slideOver()
+                //         ->hiddenLabel(),
+                // )
                 // ->filtersLayout(FiltersLayout::AboveContentCollapsible)
                 ->paginationPageOptions([25, 50, 100])
+                ->deferFilters(false)
                 ->deferColumnManager(false);
         });
 

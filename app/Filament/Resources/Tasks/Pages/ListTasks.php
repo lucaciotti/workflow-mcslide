@@ -59,7 +59,7 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
             // CreateAction::make('Importa')->label('Importa'),
             ViewWorkflow::make(),
             Action::make('Importa')->label('Importa')->url(TaskImportFileResource::getUrl()),
-            ManageTablePresetAction::make()->label('')->outlined(),
+            // ManageTablePresetAction::make()->label('')->outlined(),
             // ImportAction::make()->importer(TaskImporter::class)
         ];
     }
