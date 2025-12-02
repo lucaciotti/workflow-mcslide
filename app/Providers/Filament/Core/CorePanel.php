@@ -24,6 +24,7 @@ use Filament\Support\Enums\Width;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
+use TomatoPHP\FilamentPWA\FilamentPWAPlugin;
 use WatheqAlshowaiter\FilamentStickyTableHeader\StickyTableHeaderPlugin;
 use Ymsoft\FilamentTablePresets\FilamentTablePresetPlugin;
 

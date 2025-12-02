@@ -7,6 +7,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use TomatoPHP\FilamentPWA\FilamentPWAPlugin;
 
 class ConfigPanelProvider extends PanelProvider
 {
@@ -29,6 +30,7 @@ class ConfigPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \TomatoPHP\FilamentUsers\FilamentUsersPlugin::make(),
+                FilamentPWAPlugin::make()->allowPWASettings(true),
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \Boquizo\FilamentLogViewer\FilamentLogViewerPlugin::make()
                     ->navigationGroup('System')

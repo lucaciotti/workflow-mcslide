@@ -8,6 +8,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Widgets\AccountWidget;
+use TomatoPHP\FilamentPWA\FilamentPWAPlugin;
 
 class MainPanelProvider extends PanelProvider
 {
@@ -28,6 +29,9 @@ class MainPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 TaskOverview::class,
+            ])
+            ->plugins([
+                FilamentPWAPlugin::make()->allowPWASettings(false),
             ]);
     }
 }
