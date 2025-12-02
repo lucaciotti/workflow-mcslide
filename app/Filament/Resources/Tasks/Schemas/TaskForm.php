@@ -76,6 +76,12 @@ class TaskForm
                             $attribute_id = $component->getContainer()->getParentComponent()->getState()[$uuidContainer]['attribute_id'];
                             return $attribute_id ? Attribute::find($attribute_id)?->type->value == 'bool' : false;
                         }),
+                    DatePicker::make('date_value')->label('Valore')
+                        ->visible(function (DatePicker $component) {
+                            $uuidContainer = array_last(explode(".", $component->getContainer()->getStatePath()));
+                            $attribute_id = $component->getContainer()->getParentComponent()->getState()[$uuidContainer]['attribute_id'];
+                            return $attribute_id ? Attribute::find($attribute_id)?->type->value == 'date' : false;
+                        }),
                 ]),
             ]),
             );

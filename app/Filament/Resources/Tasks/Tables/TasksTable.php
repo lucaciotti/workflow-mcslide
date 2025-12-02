@@ -72,22 +72,25 @@ class TasksTable
                     ->toggleable(),
                 TextColumn::make('num')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('date')->label('Data')
                     ->date()
                     ->sortable(),
                 TextColumn::make('customer.name')->label('Cliente')
                     ->sortable()
+                    ->searchable()
                     ->toggleable(),
                 TextColumn::make('shippingAddress.name')->label('Ind.Spedizione')
-                    ->numeric()
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('carrier.name')->label('Vettore')
+                TextColumn::make('carrier')->label('Vettore')
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('productRange.name')->label('Fam.Prodotto')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
                 TextColumn::make('date_shipping')->label('Data Spedizione')
                     ->date()
