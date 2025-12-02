@@ -6,6 +6,7 @@ use App\Enums\TaskTypes;
 use App\Models\Attribute;
 use App\Models\AttributeCategory;
 use App\Models\Task;
+use App\Models\User;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
 use Filament\Actions\Action;
@@ -21,6 +22,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Kirschbaum\Commentions\Filament\Actions\CommentsAction;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\ExportAction;
 use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
@@ -134,7 +136,9 @@ class TasksTable
                         $record->workflow_state_id = (int) $data['state_id'];
                         $record->save();
                     }),
-                EditAction::make(),
+                CommentsAction::make()
+                    ->mentionables(User::all()),
+                EditAction::make()->hiddenLabel(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

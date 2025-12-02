@@ -9,11 +9,12 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Kirschbaum\Commentions\Contracts\Commenter;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\Permission\Traits\HasRoles;
 use Ymsoft\FilamentTablePresets\Traits\WithFilamentTablePresets;
 
-class User extends Authenticatable implements Auditable, FilamentUser
+class User extends Authenticatable implements Auditable, FilamentUser, Commenter
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;

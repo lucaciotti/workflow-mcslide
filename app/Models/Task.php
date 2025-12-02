@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Kirschbaum\Commentions\Contracts\Commentable;
+use Kirschbaum\Commentions\HasComments;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Task extends Model implements Auditable
+class Task extends Model implements Auditable, Commentable
 {
+    use HasComments;
     use \OwenIt\Auditing\Auditable;
 
     protected $guarded = ['id'];
