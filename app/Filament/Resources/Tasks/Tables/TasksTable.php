@@ -9,7 +9,9 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -22,6 +24,8 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Blade;
 use Kirschbaum\Commentions\Filament\Actions\CommentsAction;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\ExportAction;
@@ -142,7 +146,19 @@ class TasksTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    BulkAction::make('Genera Report')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->openUrlInNewTab()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function (Collection $records) {
+                            return response()->streamDownload(function () use ($records) {
+                                echo Pdf::loadHTML(
+                                    Blade::render('export.pdf.task', ['records' => $records])
+                                )->setPaper('a4', 'landscape')->stream();
+                            }, 'Ordini_pianificati.pdf');
+                        }),
+
+                // DeleteBulkAction::make(),
                 ]),
                 ExportAction::make()->exports([
                     ExcelExport::make()->fromTable()->except([
@@ -150,6 +166,7 @@ class TasksTable
                         'updated_at',
                     ])->ignoreFormatting([
                         'date',
+                        'date_shipping',
                         'num'
                     ]),
                 ]),
