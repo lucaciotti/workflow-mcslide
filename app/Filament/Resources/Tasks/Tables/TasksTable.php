@@ -39,22 +39,27 @@ class TasksTable
     {
         $attrRepeaters = [];
         foreach (AttributeCategory::all() as $cat) {
+            $singleAttrRepeaters = [];
             foreach (Attribute::where('attribute_category_id', $cat->id)->get() as $attr) {
                 array_push(
-                    $attrRepeaters,
-                    ColumnGroup::make($cat->name, [
-                        TextColumn::make($attr->name)
-                            ->getStateUsing(fn($record) =>
-                            $record->attributeValues()
-                                ->where('attribute_id', $attr->id)->first()->value ?? '-')
-                            ->label($attr->name)
-                            ->sortable()
-                            ->toggleable(),
-                    ])
-                        ->alignment(Alignment::Center)
-                        ->wrapHeader(),
-                );
+                    $singleAttrRepeaters,
+                    TextColumn::make($attr->name)
+                        ->getStateUsing(fn($record) =>
+                        $record->attributeValues()
+                            ->where('attribute_id', $attr->id)->first()->value ?? '-')
+                        ->label($attr->name)
+                        ->sortable()
+                        ->toggleable(),
+                );                
             }
+            array_push(
+                $attrRepeaters,
+                ColumnGroup::make($cat->name, [
+                    ...$singleAttrRepeaters,
+                ])
+                    ->alignment(Alignment::Center)
+                    ->wrapHeader(),
+            );
         }
         return $table
             ->columns([

@@ -41,14 +41,14 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
 
     protected function handleTableFilterUpdates(): void
     {
-        $this->selectedFilamentPreset = null;
+        // $this->selectedFilamentPreset = null;
 
         parent::handleTableFilterUpdates();
     }
 
     public function updatedTableSort(): void
     {
-        $this->selectedFilamentPreset = null;
+        // $this->selectedFilamentPreset = null;
 
         parent::updatedTableSort();
     }
