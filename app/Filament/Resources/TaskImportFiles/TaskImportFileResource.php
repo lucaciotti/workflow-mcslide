@@ -53,7 +53,7 @@ class TaskImportFileResource extends Resource
         return [
             //
             // TempTasksRelationManager::make(),
-            AuditsRelationManager::make(),
+            // AuditsRelationManager::make(),
             
         ];
     }

@@ -81,17 +81,21 @@ class TaskForm
         }
         return $schema->columns(3)
             ->components([
-                Section::make('Generale')->columnSpan(2)->columns(2)->schema([
-                Select::make('type')
+                Section::make('Info Ordine')->columnSpan(2)->columns(2)->schema([
+                Select::make('type')->label('Tipologia Ordine')
                     ->options(TaskTypes::array())
                     ->default('ord')
+                    ->disabled()
                     ->required(),
-                DatePicker::make('date')
+                DatePicker::make('date')->label('Data Ordine')
+                    ->disabled()
                     ->required(),
-                TextInput::make('num')
+                TextInput::make('num')->label('Numero Ordine')
+                    ->disabled()
                     ->numeric()
                     ->default(0),
-                Select::make('customer_id')
+                Select::make('customer_id')->label('Cliente')
+                    ->disabled()
                     ->relationship('customer', 'name')
                     ->searchable()
                     ->preload()
@@ -110,12 +114,19 @@ class TaskForm
                             ->maxLength(2)
                     ])
                     ->required(),
+                Select::make('shipping_address_id')->label('Destinazione Merce')
+                    ->disabled()
+                    ->relationship('shippingAddress', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 // TextInput::make('shipping_address_id')
                 //     ->numeric(),
-                TextInput::make('carrier')
+                TextInput::make('carrier')->label('Vettore')
+                    ->disabled()
                     ->default(''),
-                DatePicker::make('date_shipping'),
-                Select::make('product_range_id')
+                DatePicker::make('date_shipping')->label('Data Spedizione'),
+                Select::make('product_range_id')->label('Famiglia Prodotto')
                     ->relationship('productRange', 'name')
                     ->searchable()
                     ->preload()
@@ -124,7 +135,7 @@ class TaskForm
                             ->required()
                             ->maxLength(255),
                     ]),
-                Toggle::make('box_glass'),
+                Toggle::make('box_glass')->label('Vetro'),
                 ]),
                 Section::make('Stato')->schema([
                     Select::make('workflow_state_id')->hiddenLabel()
