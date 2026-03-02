@@ -3,9 +3,12 @@
 namespace App\Filament\Resources\Tasks\Tables;
 
 use App\Enums\TaskTypes;
+use App\Exports\TasksExport;
+use App\Jobs\ImportTaskValues;
 use App\Models\Attribute;
 use App\Models\AttributeCategory;
 use App\Models\Task;
+use App\Models\TaskValuesImportFile;
 use App\Models\User;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
@@ -16,7 +19,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Actions\HeaderActionsPosition;
@@ -27,9 +32,11 @@ use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Kirschbaum\Commentions\Filament\Actions\CommentsAction;
+use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\ExportAction;
 use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
@@ -47,7 +54,7 @@ class TasksTable
                 if ($attr->type=='date'){
                         array_push(
                             $singleAttrRepeaters,
-                            TextInputColumn::make($attr->id)->type('datetime-local')
+                            TextInputColumn::make('attribute_'.$attr->id)->type('datetime-local')
                                 ->getStateUsing(fn($record) =>
                                 $record->attributeValues()
                                     ->where('attribute_id', $attr->id)->first()->value->toDateTimeLocalString() ?? '-')
@@ -62,7 +69,7 @@ class TasksTable
                     } else {
                         array_push(
                             $singleAttrRepeaters,
-                            TextInputColumn::make($attr->id)
+                            TextInputColumn::make('attribute_'.$attr->id)
                                 ->getStateUsing(fn($record) =>
                                 $record->attributeValues()
                                     ->where('attribute_id', $attr->id)->first()->value ?? '-')
@@ -123,6 +130,12 @@ class TasksTable
                 IconColumn::make('box_glass')->label('Vetro')
                     ->boolean()
                     ->toggleable(),
+                IconColumn::make('compensatori')->label('Compensatori')
+                    ->boolean()
+                    ->toggleable(),
+                IconColumn::make('binari')->label('Lav.su Binari')
+                    ->boolean()
+                    ->toggleable(),
                 ...$attrRepeaters,
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -177,6 +190,7 @@ class TasksTable
                 EditAction::make()->hiddenLabel(true)->tooltip('Modifica'),
             ])->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
+                ManageTablePresetAction::make()->label('')->outlined(),
                 BulkActionGroup::make([
                     BulkAction::make('Genera Report')
                         ->icon('heroicon-m-arrow-down-tray')
@@ -192,17 +206,76 @@ class TasksTable
 
                 // DeleteBulkAction::make(),
                 ]),
-                ExportAction::make()->exports([
-                    ExcelExport::make()->fromTable()->except([
-                        'created_at',
-                        'updated_at',
-                    ])->ignoreFormatting([
-                        'date',
-                        'date_shipping',
-                        'num'
-                    ]),
-                ]),
-                ManageTablePresetAction::make()->label('')->outlined(),
+                Action::make('exportExcel')
+                    ->label('Esporta Colonne')
+                    ->icon(Heroicon::ArrowDownTray)
+                    ->action(function (Table $table) {
+                        // $table->getVisibleColumns()
+                        $date = Carbon::now();
+                        $exportName = 'CO_' . $date->format('Ymd') . '_' . $date->format('Hmi') . '.xlsx';
+                        return Excel::download(new TasksExport($table->getQuery(), $table->getVisibleColumns()), $exportName);
+                    }),
+                // Action::make('importExcel')
+                //     ->label('Importa Valori')
+                //     ->color('warning')
+                //     ->icon(Heroicon::ArrowUpTray)
+                //     ->action(function (Table $table) {
+                //         // dd();
+                //         // $table->getVisibleColumns()
+                //         return 
+                //     }),
+
+            Action::make('importExcel')
+                ->label('Importa Valori')
+                ->color('warning')
+                ->icon(Heroicon::ArrowUpTray)
+                ->schema([
+                    FileUpload::make('filename')
+                        ->label('Carica file excel')
+                        ->openable()
+                        // ->directory('task_import_files')
+                        ->visibility('public')
+                        ->storeFiles(false)
+                        ->preserveFilenames()
+                        ->acceptedFileTypes(['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
+                ])
+                ->action(function (array $data): void {
+                    if (array_key_exists('filename', $data)) {
+                        try {
+                            $date = Carbon::now();
+                            $file = $data['filename'];
+                            $extension = $file->getClientOriginalExtension();
+                            $originalName = $file->getClientOriginalName();
+                            $newName = $date->format('Ymd') . '_' . $date->format('Hmi');
+                            $path = $file->storeAs('tasks_import_values', $newName . '.' . $extension);
+                            $savedata = [
+                                'status' => 'File Caricato',
+                                'path' => $path,
+                                'filename' => $originalName
+                            ];
+                            $taskImportFile = TaskValuesImportFile::create($savedata);
+                            $recipient = auth()->user();
+                            // Excel::import(new UsersImport, 'users.xlsx');
+                            ImportTaskValues::dispatch($taskImportFile->id)->onQueue('tasks');
+                            Notification::make()
+                                ->title('Importazione Valori')
+                                ->title('File ' . $originalName . ' caricato')
+                                ->sendToDatabase($recipient);
+                        } catch (\Throwable $th) {
+                            $recipient = auth()->user();
+                            Notification::make()
+                                ->title('Errore Importazione Valori')
+                                ->body($th->getMessage())
+                                ->sendToDatabase($recipient);
+                        }
+                    } else {
+                        Notification::make()
+                            ->title('Nessun file caricato!')
+                            ->warning()
+                            ->send();
+                    }
+                })
+
             ]);
     }
 }

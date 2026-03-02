@@ -39,9 +39,9 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme('https');
             request()->server->set('HTTPS', request()->header('X-Forwarded-Proto', 'https') == 'https' ? 'on' : 'off');
         }
-        FilamentAsset::register([
-            Js::make('custom-fullscreen', __DIR__ . '/../../resources/js/custom-fullscreen.js'),
-        ]);
+        // FilamentAsset::register([
+        //     Js::make('custom-fullscreen', __DIR__ . '/../../resources/js/custom-fullscreen.js'),
+        // ]);
         // Panel::configureUsing(function (Panel $panel): void {
         //     $panel->maxContentWidth(Width::Full);
         // });

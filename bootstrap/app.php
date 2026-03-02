@@ -12,7 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
-    })
+    })->withEvents(discover: [
+        app_path('Listeners')
+    ])
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

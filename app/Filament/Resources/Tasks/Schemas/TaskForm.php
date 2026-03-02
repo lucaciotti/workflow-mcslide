@@ -34,15 +34,15 @@ class TaskForm
                 $attrRepeaters,
                 Section::make($cat->name)->columnSpan(2)->collapsible()->schema([
                 Repeater::make($cat->name)->columns(2)->hiddenLabel()
-                // ->table([
-                //     TableColumn::make('Nome Attributo')->wrapHeader(),
-                //     TableColumn::make('Valore')->colum(),
-                //     TableColumn::make('Valore')->wrapHeader(),
-                // ])
                 ->addActionLabel('Aggiungi Attributo')->label($cat->name)
                 ->relationship('attributeValues', modifyQueryUsing: fn(Builder $query) => $query->whereHas('attribute', function ($q) use ($cat) {
                     $q->where('attribute_category_id', $cat->id);
                 }),)
+                ->table([
+                    TableColumn::make('Nome Attributo')->wrapHeader(),
+                    TableColumn::make('Valore'),
+                    // TableColumn::make('Valore')->wrapHeader(),
+                ])->compact()
                 ->schema([
                     Select::make('attribute_id')
                         ->label('Name')
@@ -143,6 +143,8 @@ class TaskForm
                             ->maxLength(255),
                     ]),
                 Toggle::make('box_glass')->label('Vetro'),
+                Toggle::make('compensatori')->label('Compensatori'),
+                Toggle::make('binari')->label('Lav.su Binari'),
                 ]),
                 Section::make('Gestione')->schema([
                     Fieldset::make('Stato')->schema([
