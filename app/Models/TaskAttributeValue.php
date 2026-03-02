@@ -17,13 +17,12 @@ class TaskAttributeValue extends Model implements Auditable
         'num_value',
         'string_value',
         'bool_value',
+        'date_value',
     ];
 
     protected $appends = ['value'];
 
-    // protected $casts = [
-    //     'value' => AttributeValueCast::class,
-    // ];
+    // protected $casts = ['value'];
 
     public function getValueAttribute()
     {
@@ -37,6 +36,10 @@ class TaskAttributeValue extends Model implements Auditable
                 break;
             case 'bool':
                 return $this->attributes['bool_value'];
+                break;
+                break;
+            case 'date':
+                return $this->attributes['date_value'];
                 break;
             default:
                 return $this->attributes['string_value'];
@@ -56,6 +59,10 @@ class TaskAttributeValue extends Model implements Auditable
                 break;
             case 'bool':
                 $this->attributes['bool_value'] = boolval($value);
+                break;
+                break;
+            case 'date':
+                $this->attributes['date_value'] = boolval($value);
                 break;
             default:
                 $this->attributes['string_value'] = strval($value);

@@ -15,6 +15,7 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Ymsoft\FilamentTablePresets\Filament\Actions\ManageTablePresetAction;
 use Ymsoft\FilamentTablePresets\Filament\Pages\HasFilamentTablePresets;
@@ -36,7 +37,16 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
 
     protected function getTableHeaderActions(): array
     {
-        return $this->retrieveVisiblePresetActions();
+        $actions = $this->retrieveVisiblePresetActions();
+        // array_push(
+        //     $actions, 
+        //     Action::make('panel-fullscreen')->hiddenLabel()->icon(Heroicon::ArrowsPointingOut)->color('default')->extraAttributes(
+        //         [
+        //             'id' => 'panel-fullscreen',
+        //         ]
+        //     )
+        // );
+        return $actions;
     }
 
     protected function handleTableFilterUpdates(): void
@@ -58,7 +68,7 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
         return [
             // CreateAction::make('Importa')->label('Importa'),
             ViewWorkflow::make(),
-            Action::make('Importa')->label('Importa')->url(TaskImportFileResource::getUrl()),
+            // Action::make('Importa')->label('Importa')->url(TaskImportFileResource::getUrl()),
             // ManageTablePresetAction::make()->label('')->outlined(),
             // ImportAction::make()->importer(TaskImporter::class)
         ];

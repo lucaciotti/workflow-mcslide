@@ -19,9 +19,12 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Actions\HeaderActionsPosition;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
@@ -41,16 +44,37 @@ class TasksTable
         foreach (AttributeCategory::all() as $cat) {
             $singleAttrRepeaters = [];
             foreach (Attribute::where('attribute_category_id', $cat->id)->get() as $attr) {
-                array_push(
-                    $singleAttrRepeaters,
-                    TextColumn::make($attr->name)
-                        ->getStateUsing(fn($record) =>
-                        $record->attributeValues()
-                            ->where('attribute_id', $attr->id)->first()->value ?? '-')
-                        ->label($attr->name)
-                        ->sortable()
-                        ->toggleable(),
-                );                
+                if ($attr->type=='date'){
+                        array_push(
+                            $singleAttrRepeaters,
+                            TextInputColumn::make($attr->id)->type('datetime-local')
+                                ->getStateUsing(fn($record) =>
+                                $record->attributeValues()
+                                    ->where('attribute_id', $attr->id)->first()->value->toDateTimeLocalString() ?? '-')
+                                ->label($attr->name)
+                                ->beforeStateUpdated(function ($record, $state) use ($attr) {
+                                    $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
+                                })
+                                ->updateStateUsing(function ($record, $state) { return $state; })
+                                ->sortable()
+                                ->toggleable(),
+                        );                
+                    } else {
+                        array_push(
+                            $singleAttrRepeaters,
+                            TextInputColumn::make($attr->id)
+                                ->getStateUsing(fn($record) =>
+                                $record->attributeValues()
+                                    ->where('attribute_id', $attr->id)->first()->value ?? '-')
+                                ->label($attr->name)
+                                ->beforeStateUpdated(function ($record, $state) use ($attr) {
+                                    $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
+                                })
+                                ->updateStateUsing(function ($record, $state) { return $state; })
+                                ->sortable()
+                                ->toggleable(),
+                        );                
+                    }
             }
             array_push(
                 $attrRepeaters,
@@ -124,7 +148,7 @@ class TasksTable
             ])
             ->recordActions([
             // ViewAction::make(),
-                Action::make('transition')->label('Modifica Stato       ')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
+                Action::make('transition')->label('Modifica Stato       ')->hiddenLabel(true)->tooltip('Modifica Stato')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
                     ->schema([
                         Select::make('state_id')
                             ->searchable()
@@ -148,10 +172,10 @@ class TasksTable
                         $record->workflow_state_id = (int) $data['state_id'];
                         $record->save();
                     }),
-                CommentsAction::make()
+                CommentsAction::make()->hiddenLabel(true)->tooltip('Commenti')
                     ->mentionables(User::all()),
-                EditAction::make()->hiddenLabel(),
-            ])
+                EditAction::make()->hiddenLabel(true)->tooltip('Modifica'),
+            ])->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('Genera Report')

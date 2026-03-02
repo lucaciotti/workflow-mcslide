@@ -6,8 +6,10 @@ use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Actions\Action;
 use Filament\Livewire\Notifications;
 use Filament\Panel as Panel;
+use Filament\Support\Assets\Js;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\Width;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
@@ -37,6 +39,9 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme('https');
             request()->server->set('HTTPS', request()->header('X-Forwarded-Proto', 'https') == 'https' ? 'on' : 'off');
         }
+        FilamentAsset::register([
+            Js::make('custom-fullscreen', __DIR__ . '/../../resources/js/custom-fullscreen.js'),
+        ]);
         // Panel::configureUsing(function (Panel $panel): void {
         //     $panel->maxContentWidth(Width::Full);
         // });
