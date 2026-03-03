@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\TaskImportFile;
 use App\Models\TempTask;
 use Excel;
+use Filament\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -56,7 +57,6 @@ class ImportTasks implements ShouldQueue
         $recipient = $this->importedfile->audits()->get()->last()->user;
         Notification::make()
             ->title('Errore Importazione Ordini')
-            ->error()
             ->body($e->getMessage())
             ->sendToDatabase($recipient);
     }

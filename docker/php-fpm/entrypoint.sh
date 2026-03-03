@@ -9,8 +9,8 @@ set -e
 if [ ! "$(ls -A /var/www/storage)" ]; then
   echo "Initializing storage directory..."
   cp -R /var/www/storage-init/. /var/www/storage
-  chown -R www-data:www-data /var/www/storage
 fi
+chown -R www-data:www-data /var/www/storage
 
 # Remove storage-init directory
 rm -rf /var/www/storage-init
@@ -20,8 +20,8 @@ rm -rf /var/www/storage-init
 if [  "$(ls -A /var/www/public-init)" ]; then
   echo "Deploying public directory..."
   cp -R /var/www/public-init/. /var/www/public
-  chown -fR www-data:www-data /var/www/public
 fi
+chown -fR www-data:www-data /var/www/public
 
 # Remove storage-init directory
 rm -rf /var/www/public-init
