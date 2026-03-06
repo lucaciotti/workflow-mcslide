@@ -38,11 +38,11 @@ class TaskForm
                 ->relationship('attributeValues', modifyQueryUsing: fn(Builder $query) => $query->whereHas('attribute', function ($q) use ($cat) {
                     $q->where('attribute_category_id', $cat->id);
                 }),)
-                ->table([
-                    TableColumn::make('Nome Attributo')->wrapHeader(),
-                    TableColumn::make('Valore'),
-                    // TableColumn::make('Valore')->wrapHeader(),
-                ])->compact()
+                // ->table([
+                //     TableColumn::make('Nome Attributo')->wrapHeader(),
+                //     TableColumn::make('Valore'),
+                //     // TableColumn::make('Valore')->wrapHeader(),
+                // ])->compact()
                 ->schema([
                     Select::make('attribute_id')
                         ->label('Name')
