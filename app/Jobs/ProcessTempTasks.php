@@ -7,7 +7,6 @@ use App\Models\TaskImportFile;
 use App\Models\TaskRow;
 use App\Models\User;
 use Carbon\Carbon;
-use DB;
 use Filament\Notifications\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Log;
 
 class ProcessTempTasks implements ShouldQueue
@@ -112,46 +112,52 @@ class ProcessTempTasks implements ShouldQueue
 
     private function analizeTempTasks()
     {
-        DB::transaction(function () {
-            $temptasks = $this->importedfile->tempTasks;
-            $this->hasWarnings = false;
-            foreach ($temptasks as $temptask) {
-                $task_wheredata = [
-                    ['num', $temptask->num],
-                    ['customer_id', $temptask->customer_id],
-                    ['date', $temptask->date],
-                    ['type', $temptask->type],
-                ];
-                $task = Task::where($task_wheredata)->first();
-                if ($task != null) {
-                    $temptask->task_id = $task->id;
-                    try {
-                        if ($task->audits->last()->user_id != null) {
-                            $temptask->warning = true;
-                            $temptask->error = 'Commessa già importata e modificata da utente!';
-                            $this->hasWarnings = true;
+        try {
+            DB::transaction(function () {
+                $temptasks = $this->importedfile->tempTasks;
+                $this->hasWarnings = false;
+                foreach ($temptasks as $temptask) {
+                    $task_wheredata = [
+                        ['num', $temptask->num],
+                        ['customer_id', $temptask->customer_id],
+                        ['date', $temptask->date],
+                        ['type', $temptask->type],
+                    ];
+                    $task = Task::where($task_wheredata)->first();
+                    if ($task != null) {
+                        $temptask->task_id = $task->id;
+                        try {
+                            if ($task->audits->last()->user_id != null) {
+                                $temptask->warning = true;
+                                $temptask->error = 'Commessa già importata e modificata da utente!';
+                                $this->hasWarnings = true;
+                            }
+                        } catch (\Throwable $th) { //throw $th;
                         }
-                    } catch (\Throwable $th) {//throw $th;
                     }
+                    if ($temptask->tempTaskRows->count() > 1) {
+                        $temptask->warning = true;
+                        $temptask->error = 'Presenti molteplici gamme prodotto!';
+                        $this->hasWarnings = true;
+                    }
+                    $temptask->selected = true;
+                    $temptask->save();
                 }
-                if ($temptask->tempTaskRows->count() > 1) {
-                    $temptask->warning = true;
-                    $temptask->error = 'Presenti molteplici gamme prodotto!';
-                    $this->hasWarnings = true;
+                if ($this->hasWarnings) {
+                    $recipient = $this->importedfile->audits->where('user_id', '!=', null)->last()->user;
+                    Notification::make()
+                        ->warning()
+                        ->title('Importazione Ordini da verificare!')
+                        ->body('Alcune righe hanno dei Warnings! [' . $this->importedfile->filename . ']')
+                        ->sendToDatabase($recipient);
                 }
-                $temptask->selected = true;
-                $temptask->save();
-            }
-            if ($this->hasWarnings) {
-                $recipient = $this->importedfile->audits->where('user_id', '!=', null)->last()->user;
-                Notification::make()
-                    ->warning()
-                    ->title('Importazione Ordini da verificare!')
-                    ->body('Alcune righe hanno dei Warnings! [' . $this->importedfile->filename . ']')
-                    ->sendToDatabase($recipient);
-            }
-            Log::info('ProcessTempTasks Analizied TempTasks');
-        });
+                Log::info('ProcessTempTasks Analizied TempTasks');
+            });
+        } catch (\Throwable $th) {
+            //throw $th;
+            report($th);
+        }
+        
     }
 
     public function failed(\Throwable $th)

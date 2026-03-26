@@ -57,17 +57,20 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
             $temptask_wheredata = [];
             $temptaskrow_data = [];
             $customer_data = [];
+            $customer_find = [];
             $ship_address_data = [];
+            $ship_address_find = [];
             $prod_range_data = [];
+            $prod_range_find = [];
 
             $workflow_state_name = (string)$row[15];
 
             $temptask_data['task_import_file_id'] = $this->importedfile->id;
             $temptask_data['type'] = Str::contains(str::lower($row[0]), 'sost') ? 'sost' : 'ord';
-            $temptask_data['date'] = Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[1]));
+            $temptask_data['date'] = is_numeric($row[1]) ? Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[1])) : null;
             $temptask_data['num'] = (int)$row[2];
             $temptask_data['carrier'] = (int)$row[16];
-            $temptask_data['date_shipping'] = Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[17]));
+            $temptask_data['date_shipping'] = is_numeric($row[17]) ? Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[17])) : null;
             // $temptask_data['box_glass'] = Str::contains(str::lower($row[18]), 'si') ? true : false;
             $temptask_data['num_row'] = $num_row;
             
@@ -75,21 +78,28 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
             $temptaskrow_data['box_glass'] = Str::contains(str::lower($row[18]), 'si') ? true : false;
             $temptaskrow_data['num_row'] = $num_row;
 
+            $customer_find['code'] = (int)$row[3];
             $customer_data['code'] = (int)$row[3];
             $customer_data['name'] = (string)$row[4];
             $customer_data['area'] = (string)$row[5];
             $customer_data['provincia'] = (string)$row[6];
 
+            $ship_address_find['name'] = !blank((string)$row[7]) ? (string)$row[7] : (string)$row[4];
             $ship_address_data['name'] = !blank((string)$row[7]) ? (string)$row[7] : (string)$row[4];
             $ship_address_data['area'] = (string)$row[8];
             $ship_address_data['provincia'] = !blank((string)$row[9]) ? (string)$row[9] : ((string)$row[8]== (string)$row[5] ? (string)$row[6] : null);
 
+            $prod_range_find['name'] = (string)$row[13];
             $prod_range_data['name'] = (string)$row[13];
             if (blank($prod_range_data['name']) || $prod_range_data['name']=='SP'){
                 continue;
             }
-
-            $customer = Customer::firstOrCreate($customer_data);
+            try {
+                $customer = Customer::firstOrCreate($customer_find, $customer_data);
+            } catch (\Throwable $th) {
+                report($th);
+                throw $th;
+            }
             if ($customer){
                 $temptask_data['customer_id'] = $customer->id;
                 $ship_address_data['customer_id'] = $customer->id;
@@ -97,14 +107,14 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
                 continue;                
             }
 
-            $ship_address = ShippingAddress::firstOrCreate($ship_address_data);
+            $ship_address = ShippingAddress::firstOrCreate($ship_address_find, $ship_address_data);
             if ($ship_address) {
                 $temptask_data['shipping_address_id'] = $ship_address->id;
             } else {
                 continue;
             }
 
-            $prod_range = ProductRange::firstOrCreate($prod_range_data);
+            $prod_range = ProductRange::firstOrCreate($prod_range_find, $prod_range_data);
             if ($prod_range) {
                 $temptaskrow_data['product_range_id'] = $prod_range->id;
             } else {

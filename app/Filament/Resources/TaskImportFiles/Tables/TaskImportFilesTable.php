@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TaskImportFiles\Tables;
 
 use App\Filament\Resources\TaskImportFiles\TaskImportFileResource;
+use App\Jobs\ImportTasks;
 use App\Jobs\ProcessTempTasks;
 use App\Models\TaskImportFile;
 use Filament\Actions\Action;
@@ -49,7 +50,7 @@ class TaskImportFilesTable
                     ->modalHeading('Elabora nuovamente import')
                     ->modalDescription('Si desidera ri-processare l\'importazione?')
                     ->modalSubmitActionLabel('Si, procedi')
-                    ->action(fn(TaskImportFile $record) => ProcessTempTasks::dispatch($record->id, $record->hasWarnings)->onQueue('tasks'))
+                    ->action(fn(TaskImportFile $record) => ImportTasks::dispatch($record->id)->onQueue('tasks')/* ProcessTempTasks::dispatch($record->id, $record->hasWarnings)->onQueue('tasks') */)
                     ->visible(fn(TaskImportFile $record) => in_array($record->status, ['Errore', 'Processato', 'Verificare'])),
                 Action::make('download') 
                     ->label('Download')

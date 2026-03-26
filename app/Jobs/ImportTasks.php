@@ -54,7 +54,7 @@ class ImportTasks implements ShouldQueue
         $this->importedfile->save();
         report($e);
 
-        $recipient = $this->importedfile->audits()->get()->last()->user;
+        $recipient = $this->importedfile->audits()->get()->first()->user;
         Notification::make()
             ->title('Errore Importazione Ordini')
             ->body($e->getMessage())
