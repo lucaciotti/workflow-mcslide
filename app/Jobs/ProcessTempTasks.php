@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\TaskImportFile;
 use App\Models\TaskRow;
 use App\Models\User;
+use App\Models\WorkflowState;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Illuminate\Bus\Queueable;
@@ -51,10 +52,12 @@ class ProcessTempTasks implements ShouldQueue
                     $dataTask = [];
                     $dataTaskRow = [];
                     $task = null;
+                    $newTask = false;
                     if ($tempTask->selected) {
                         $dataTask = $tempTask->toArray();
                         if (empty($tempTask->task_id)) {
                             $task = Task::create($dataTask);
+                            $newTask = true;
                         } else {
                             $task = Task::find($tempTask->task_id);
                             $task->update($dataTask);
@@ -63,28 +66,47 @@ class ProcessTempTasks implements ShouldQueue
                         $tempTask->date_last_import = Carbon::now();
                         $tempTask->save();
                         $n_row = 1;
-                        foreach ($tempTask->tempTaskRows as $tempTaskRow) {
-                            $dataTaskRow = $tempTaskRow->toArray();
-                            if (TaskRow::where('task_id', $task->id)->exists()){
-                                TaskRow::where('task_id', $task->id)->delete();
+                        if($newTask){
+                            // Gestione Stato Flusso
+                            $erpState = $tempTask->erpState;
+                            if ($erpState){
+                                $workflow_state = WorkflowState::whereHas('erpStates', function($query) use ($erpState) {
+                                    $query->where('erp_state_id', $erpState->id);
+                                })->first();
+                                if ($workflow_state) {
+                                    $task->workflow_state_id = $workflow_state->id;
+                                }
                             }
-                            $taskrow = TaskRow::create($dataTaskRow);
-    
-                            if($n_row==1){
-                                $task->product_range_id = $taskrow->product_range_id;
-                                $task->box_glass = $taskrow->box_glass;
-                                $task->save();
+
+
+                            // Gestione Famigle Prodotti
+                            foreach ($tempTask->tempTaskRows as $tempTaskRow) {
+                                // $dataTaskRow = $tempTaskRow->toArray();
+                                // if (TaskRow::where('task_id', $task->id)->exists()){
+                                //     TaskRow::where('task_id', $task->id)->delete();
+                                // }
+                                // $taskrow = TaskRow::create($dataTaskRow);
+        
+                                if($n_row==1){
+                                    $task->product_range_id = $tempTaskRow->product_range_id;
+                                    $task->box_glass = $tempTaskRow->box_glass;
+                                } else {
+                                    if($task->product_range_id != $tempTaskRow->product_range_id) {
+                                        $task->product_range_id = null;
+                                    }
+                                }
+                                // if($taskrow->productRange->primary){
+                                //     $task->product_range_id = $taskrow->product_range_id;
+                                //     $task->box_glass = $taskrow->box_glass;
+                                //     $task->save();
+                                // }
+        
+                                $tempTaskRow->imported = true;
+                                $tempTaskRow->save();
+                                $n_row++;
                             }
-                            if($taskrow->productRange->primary){
-                                $task->product_range_id = $taskrow->product_range_id;
-                                $task->box_glass = $taskrow->box_glass;
-                                $task->save();
-                            }
-    
-                            $tempTaskRow->imported = true;
-                            $tempTaskRow->save();
-                            $n_row++;
                         }
+                        $task->save();
                     }
                 }
                 $this->importedfile->date_last_import = Carbon::now();

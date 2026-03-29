@@ -60,12 +60,26 @@ class WorkflowStateForm
                     Toggle::make('has_product_range')->label('Abilita')->live(),
                     Select::make('product_range_id')
                         ->label('Famiglia Prodotti')
-                        ->relationship('productRange', 'name')
+                        ->relationship('productRanges', 'name')
                         ->multiple()
                         ->searchable()
                         ->preload()
                         ->required()
                         ->visible(fn(Get $get) => $get('has_product_range')),
+                ]),                
+                Section::make('Gestione Stati ERP')->columnSpan(2)->columns(2)->collapsed()->collapsible()->schema([
+                    Repeater::make('erpStates')->label('Stato ERP')->columnSpan(2)->relationship()->hiddenLabel()
+                        ->table([
+                            TableColumn::make('Nome Stato ERP'),
+                        ])
+                        // ->compact()
+                        ->schema([
+                            Select::make('erp_state_id')
+                                ->label('Stato ERP')
+                                ->relationship('erpState', 'name')
+                                ->searchable()
+                                ->preload(),
+                        ]),
                 ]),
                 // Select::make('permissions')
                 //     ->label('Ruoli')

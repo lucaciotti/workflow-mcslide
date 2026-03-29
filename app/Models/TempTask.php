@@ -33,8 +33,8 @@ class TempTask extends Model
         return $this->belongsTo(ProductRange::class);
     }
 
-    public function workFlowState(): BelongsTo
+    public function erpState(): BelongsTo
     {
-        return $this->belongsTo(WorkflowState::class, 'workflow_state_id', 'id');
+        return $this->belongsTo(ErpState::class, 'erp_state_id', 'id');
     }
 }

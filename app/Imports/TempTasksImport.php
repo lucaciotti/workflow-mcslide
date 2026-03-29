@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Customer;
+use App\Models\ErpState;
 use App\Models\ProductRange;
 use App\Models\ShippingAddress;
 use App\Models\TaskImportFile;
@@ -63,7 +64,7 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
             $prod_range_data = [];
             $prod_range_find = [];
 
-            $workflow_state_name = (string)$row[15];
+            $erp_state_name = (string)$row[15];
 
             $temptask_data['task_import_file_id'] = $this->importedfile->id;
             $temptask_data['type'] = Str::contains(str::lower($row[0]), 'sost') ? 'sost' : 'ord';
@@ -120,28 +121,38 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
             } else {
                 continue;
             }
-
-            $workflow_state = WorkflowState::where('name', $workflow_state_name)->first();
-            if ($workflow_state) {
-                if(WorkflowTransition::where('from_state_id', $workflow_state->id)->orWhere('to_state_id', $workflow_state->id)->exists()){
-                    $temptask_data['workflow_state_id'] = $workflow_state->id;
-                } else {
-                    if (!in_array($workflow_state_name, $new_state)) {
-                        array_push($new_state, $workflow_state_name);
-                    }
-                    $temptask_data['workflow_state_id'] = $workflow_state->id;
-                }
+            
+            $erp_state = ErpState::where('name', $erp_state_name)->first();
+            if ($erp_state) {                
+                $temptask_data['erp_state_id'] = $erp_state->id;
             } else {
-                $workflow_state = WorkflowState::create(['name' => $workflow_state_name]);
-                if ($workflow_state) {
-                    if(!in_array($workflow_state_name, $new_state) && !in_array($workflow_state_name, $state_no_workflow)){
-                        array_push($state_no_workflow, $workflow_state_name);
-                    }
-                    $temptask_data['workflow_state_id'] = $workflow_state->id;
-                } else {
-                    continue;
+                $erp_state = ErpState::create(['name' => $erp_state_name]);
+                if (!in_array($erp_state_name, $new_state)) {
+                    array_push($new_state, $erp_state_name);
                 }
+                $temptask_data['erp_state_id'] = $erp_state->id;
             }
+            // $workflow_state = WorkflowState::where('name', $workflow_state_name)->first();
+            // if ($workflow_state) {
+            //     if(WorkflowTransition::where('from_state_id', $workflow_state->id)->orWhere('to_state_id', $workflow_state->id)->exists()){
+            //         $temptask_data['workflow_state_id'] = $workflow_state->id;
+            //     } else {
+            //         if (!in_array($workflow_state_name, $new_state)) {
+            //             array_push($new_state, $workflow_state_name);
+            //         }
+            //         $temptask_data['workflow_state_id'] = $workflow_state->id;
+            //     }
+            // } else {
+            //     $workflow_state = WorkflowState::create(['name' => $workflow_state_name]);
+            //     if ($workflow_state) {
+            //         if(!in_array($workflow_state_name, $new_state) && !in_array($workflow_state_name, $state_no_workflow)){
+            //             array_push($state_no_workflow, $workflow_state_name);
+            //         }
+            //         $temptask_data['workflow_state_id'] = $workflow_state->id;
+            //     } else {
+            //         continue;
+            //     }
+            // }
 
             $temptask_wheredata = [
                 ['task_import_file_id', $temptask_data['task_import_file_id']],
@@ -171,13 +182,13 @@ class TempTasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, Wit
                 ->body('Creato nuovo Stato da gestire: ' . $state_name)
                 ->sendToDatabase($recipient);
         }
-        foreach ($state_no_workflow as $state_name) {
-            $recipient = User::whereHas('roles', fn($query) => $query->where('name', 'like', '%admin%'))->get();
-            Notification::make()
-                ->title('STATO senza Workflow da Importazione Ordini')
-                ->body('Stato da gestire: ' . $state_name)
-                ->sendToDatabase($recipient);
-        }
+        // foreach ($state_no_workflow as $state_name) {
+        //     $recipient = User::whereHas('roles', fn($query) => $query->where('name', 'like', '%admin%'))->get();
+        //     Notification::make()
+        //         ->title('STATO senza Workflow da Importazione Ordini')
+        //         ->body('Stato da gestire: ' . $state_name)
+        //         ->sendToDatabase($recipient);
+        // }
     }
 
     public function onError(\Throwable $th)

@@ -26,7 +26,7 @@ class TempTaskInfolist
                 TextEntry::make('customer.name'),
                 IconEntry::make('box_glass')
                     ->boolean(),
-                TextEntry::make('workflow_state_id')
+                TextEntry::make('erp_state_id')
                     ->numeric(),
             ]);
     }

@@ -67,7 +67,7 @@ class TempTasksRelationManager extends ManageRelatedRecords
                 Toggle::make('box_glass'),
                 TextInput::make('product_range_id')
                     ->numeric(),
-                TextInput::make('workflow_state_id')
+                TextInput::make('erp_state_id')
                     ->numeric(),
             ]);
     }
@@ -115,7 +115,7 @@ class TempTasksRelationManager extends ManageRelatedRecords
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('product_range_id')
                     ->sortable(),
-                TextColumn::make('workflow_state_id')
+                TextColumn::make('erp_state_id')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('imported')

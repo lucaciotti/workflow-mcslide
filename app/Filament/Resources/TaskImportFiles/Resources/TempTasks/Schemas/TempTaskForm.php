@@ -48,7 +48,7 @@ class TempTaskForm
                 Toggle::make('box_glass'),
                 Select::make('product_range_id')
                     ->relationship('productRange', 'name'),
-                TextInput::make('workflow_state_id')
+                TextInput::make('erp_state_id')
                     ->numeric(),
             ]);
     }
