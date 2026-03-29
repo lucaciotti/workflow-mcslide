@@ -21,9 +21,9 @@ class WorkflowStatesTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('workFlowStateCategory.name')->label('Categoria')
+                TextColumn::make('department.name')->label('Reparto')
                     ->searchable(),
-                IconColumn::make('is_gate')
+                IconColumn::make('enable_gate')
                     ->boolean(),
                 TextColumn::make('gate_days')
                     ->numeric()

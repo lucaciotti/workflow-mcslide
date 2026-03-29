@@ -19,8 +19,8 @@ class WorkflowStateForm
                 TextInput::make('name')
                     ->label('Nome Stato')
                     ->required(),
-                Select::make('workflow_state_category_id')->label('Categoria')
-                    ->relationship('workFlowStateCategory', 'name')
+                Select::make('department_id')->label('Reparto')
+                    ->relationship('department', 'name')
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
@@ -29,11 +29,11 @@ class WorkflowStateForm
                             ->maxLength(255),
                     ]),
                 Section::make('Gestione Gate')->schema([
-                    Toggle::make('is_gate')->live(),
+                    Toggle::make('enable_gate')->live(),
                     TextInput::make('gate_days')
                         ->numeric()
                         ->default(0)
-                        ->visible(fn(Get $get) => $get('is_gate')),
+                        ->visible(fn(Get $get) => $get('enable_gate')),
                 ]),
                 Select::make('permissions')
                     ->label('Ruoli')

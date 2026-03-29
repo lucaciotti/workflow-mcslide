@@ -13,7 +13,7 @@ class WorkflowStateInfolist
         return $schema
             ->components([
                 TextEntry::make('name'),
-                IconEntry::make('is_gate')
+                IconEntry::make('enable_gate')
                     ->boolean(),
                 TextEntry::make('gate_days')
                     ->numeric(),

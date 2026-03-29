@@ -15,7 +15,7 @@ class WorkflowState extends Model implements Auditable
 
     protected $fillable = [
         'name',
-        'is_gate',
+        'enable_gate',
         'gate_day'
     ];
 
@@ -24,8 +24,8 @@ class WorkflowState extends Model implements Auditable
         return $this->belongsToMany(Role::class, WorkflowStateRolePermission::class, 'state_id', 'role_id');
     }
 
-    public function workFlowStateCategory(): BelongsTo
+    public function department(): BelongsTo
     {
-        return $this->belongsTo(WorkflowStateCategory::class, 'workflow_state_category_id', 'id');
+        return $this->belongsTo(Department::class, 'department_id', 'id');
     }
 }

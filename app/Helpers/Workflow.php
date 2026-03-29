@@ -45,7 +45,7 @@ class Workflow
             ->merge($transitions->pluck('toState'))
             ->unique();
 
-        $grouped_states = $states->groupBy('workFlowStateCategory.name');
+        $grouped_states = $states->groupBy('department.name');
         $ids_states_grouped = [];
         // $mermaid .= "subgraph One\n";
         // $mermaid .= "22(Start)\n";
