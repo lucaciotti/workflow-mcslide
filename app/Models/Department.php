@@ -10,8 +10,11 @@ class Department extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
-        'name',
+    // protected $fillable = [
+    //     'name',
+    // ];
+    protected $guarded = [
+        'id'
     ];
 
     // public function tasks(): HasMany

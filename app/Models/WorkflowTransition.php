@@ -10,9 +10,12 @@ class WorkflowTransition extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
-        'from_state_id',
-        'to_state_id',
+    // protected $fillable = [
+    //     'from_state_id',
+    //     'to_state_id',
+    // ];
+    protected $guarded = [
+        'id'
     ];
 
     public function fromState(): BelongsTo

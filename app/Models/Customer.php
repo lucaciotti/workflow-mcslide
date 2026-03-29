@@ -10,14 +10,18 @@ class Customer extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
-        'code',
-        'name',
-        'area',
-        'provincia',
+    // protected $fillable = [
+    //     'code',
+    //     'name',
+    //     'area',
+    //     'provincia',
+    // ];
+
+    protected $guarded = [
+        'id'
     ];
 
-    public function customer(): HasMany
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }

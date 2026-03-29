@@ -9,10 +9,13 @@ class ShippingAddress extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
-        'customer_id',
-        'name',
-        'area',
-        'provincia',
+    // protected $fillable = [
+    //     'customer_id',
+    //     'name',
+    //     'area',
+    //     'provincia',
+    // ];
+    protected $guarded = [
+        'id'
     ];
 }

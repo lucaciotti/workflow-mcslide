@@ -14,10 +14,13 @@ class WorkflowState extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
-        'name',
-        'enable_gate',
-        'gate_day'
+    // protected $fillable = [
+    //     'name',
+    //     'enable_gate',
+    //     'gate_day'
+    // ];
+    protected $guarded = [
+        'id'
     ];
 
     public function permissions(): BelongsToMany
@@ -33,5 +36,10 @@ class WorkflowState extends Model implements Auditable
     public function gates(): HasMany
     {
         return $this->hasMany(WorkflowGate::class, 'id', 'workflow_state_id');
+    }
+
+    public function productRange(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductRange::class, WorkflowStateProductRange::class, 'workflow_state_id', 'product_range_id');
     }
 }

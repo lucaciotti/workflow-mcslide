@@ -56,6 +56,17 @@ class WorkflowStateForm
                                 ->numeric(),
                         ]),
                 ]),
+                Section::make('Gestione Famiglia Prodotto')->columnSpan(2)->columns(1)->schema([
+                    Toggle::make('has_product_range')->label('Abilita')->live(),
+                    Select::make('product_range_id')
+                        ->label('Famiglia Prodotti')
+                        ->relationship('productRange', 'name')
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+                        ->required()
+                        ->visible(fn(Get $get) => $get('has_product_range')),
+                ]),
                 // Select::make('permissions')
                 //     ->label('Ruoli')
                 //     ->relationship('permissions', 'name')->multiple()

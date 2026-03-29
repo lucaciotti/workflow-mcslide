@@ -11,12 +11,15 @@ use OwenIt\Auditing\Contracts\Auditable;
 class Attribute extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
-    
-    protected $fillable = [
-        'department_id',
-        'name',
-        'type',
+
+    protected $guarded = [
+        'id'
     ];
+    // protected $fillable = [
+    //     'department_id',
+    //     'name',
+    //     'type',
+    // ];
 
     protected function casts(): array
     {
