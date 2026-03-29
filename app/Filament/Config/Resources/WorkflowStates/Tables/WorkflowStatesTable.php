@@ -19,20 +19,20 @@ class WorkflowStatesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name')->label('Nome Stato')
                     ->searchable(),
                 TextColumn::make('department.name')->label('Reparto')
                     ->searchable(),
-                IconColumn::make('enable_gate')
+                IconColumn::make('enable_gate')->label('Gestione Gate')
                     ->boolean(),
-                TextColumn::make('gate_days')
+                TextColumn::make('gate_days')->label('n.Giorni Default Gate')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('Creato il')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('Aggiornato il')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

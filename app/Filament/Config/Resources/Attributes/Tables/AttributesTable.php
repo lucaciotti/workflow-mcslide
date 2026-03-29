@@ -24,11 +24,11 @@ class AttributesTable
                 TextColumn::make('department.name')
                     ->label('Reparto')    
                     ->searchable(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('Creato il')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('Aggiornato il')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

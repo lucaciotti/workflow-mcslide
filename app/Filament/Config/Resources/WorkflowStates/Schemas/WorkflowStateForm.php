@@ -28,17 +28,17 @@ class WorkflowStateForm
                             ->required()
                             ->maxLength(255),
                     ]),
-                Section::make('Gestione Gate')->schema([
-                    Toggle::make('enable_gate')->live(),
-                    TextInput::make('gate_days')
+                Section::make('Gestione Gate')->columnSpan(2)->columns(2)->schema([
+                    Toggle::make('enable_gate')->label('Abilita')->live(),
+                    TextInput::make('gate_days')->label('n.Giorni Default Gate')
                         ->numeric()
                         ->default(0)
                         ->visible(fn(Get $get) => $get('enable_gate')),
                 ]),
-                Select::make('permissions')
-                    ->label('Ruoli')
-                    ->relationship('permissions', 'name')->multiple()
-                    ->options(Role::query()->pluck('name', 'id'))
+                // Select::make('permissions')
+                //     ->label('Ruoli')
+                //     ->relationship('permissions', 'name')->multiple()
+                //     ->options(Role::query()->pluck('name', 'id'))
             ]);
     }
 }
