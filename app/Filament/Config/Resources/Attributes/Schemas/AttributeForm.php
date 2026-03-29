@@ -21,14 +21,14 @@ class AttributeForm
                     ->label('Tipologia')
                     ->options(AttributeTypes::array())
                     ->required(),
-                Select::make('attribute_category_id')
-                    ->relationship('attribute_category', 'name')
-                    ->label('Categoria')
+                Select::make('department_id')
+                    ->relationship('department', 'name')
+                    ->label('Reparto')
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
                         TextInput::make('name')
-                            ->label('Nome Categoria')
+                            ->label('Nome Reparto')
                             ->required()
                             ->maxLength(255)
                     ])

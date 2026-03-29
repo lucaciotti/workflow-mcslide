@@ -13,7 +13,7 @@ class Attribute extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
     
     protected $fillable = [
-        'attribute_category_id',
+        'department_id',
         'name',
         'type',
     ];
@@ -25,9 +25,9 @@ class Attribute extends Model implements Auditable
         ];
     }
 
-    public function attribute_category(): BelongsTo
+    public function department(): BelongsTo
     {
-        return $this->belongsTo(AttributeCategory::class);
+        return $this->belongsTo(Department::class);
     }
 
     public function values(): HasMany

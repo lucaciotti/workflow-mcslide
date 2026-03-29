@@ -15,8 +15,8 @@ class AttributeInfolist
                 ->label('Nome Attributo'),
                 TextEntry::make('type')
                 ->label('Tipologia'),
-                TextEntry::make('attribute_category.name')
-                ->label('Categoria'),
+                TextEntry::make('department.name')
+                ->label('Reparto'),
                 TextEntry::make('Data')
                 ->label('Data Creazione')
                     ->dateTime(),

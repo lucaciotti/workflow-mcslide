@@ -6,7 +6,7 @@ use App\Enums\TaskTypes;
 use App\Exports\TasksExport;
 use App\Jobs\ImportTaskValues;
 use App\Models\Attribute;
-use App\Models\AttributeCategory;
+use App\Models\Department;
 use App\Models\Task;
 use App\Models\TaskValuesImportFile;
 use App\Models\User;
@@ -48,9 +48,9 @@ class TasksTable
     public static function configure(Table $table): Table
     {
         $attrRepeaters = [];
-        foreach (AttributeCategory::all() as $cat) {
+        foreach (Department::all() as $cat) {
             $singleAttrRepeaters = [];
-            foreach (Attribute::where('attribute_category_id', $cat->id)->get() as $attr) {
+            foreach (Attribute::where('department_id', $cat->id)->get() as $attr) {
                 if ($attr->type=='date'){
                         array_push(
                             $singleAttrRepeaters,

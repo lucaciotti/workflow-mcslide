@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Tasks\Schemas;
 
 use App\Enums\TaskTypes;
 use App\Models\Attribute;
-use App\Models\AttributeCategory;
+use App\Models\Department;
 use App\Models\Task;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
@@ -29,14 +29,14 @@ class TaskForm
     public static function configure(Schema $schema): Schema
     {
         $attrRepeaters=[];
-        foreach (AttributeCategory::all() as $cat) {
+        foreach (Department::all() as $cat) {
             array_push(
                 $attrRepeaters,
                 Section::make($cat->name)->columnSpan(2)->collapsible()->schema([
                 Repeater::make($cat->name)->columns(2)->hiddenLabel()
                 ->addActionLabel('Aggiungi Attributo')->label($cat->name)
                 ->relationship('attributeValues', modifyQueryUsing: fn(Builder $query) => $query->whereHas('attribute', function ($q) use ($cat) {
-                    $q->where('attribute_category_id', $cat->id);
+                    $q->where('department_id', $cat->id);
                 }),)
                 // ->table([
                 //     TableColumn::make('Nome Attributo')->wrapHeader(),
@@ -46,7 +46,7 @@ class TaskForm
                 ->schema([
                     Select::make('attribute_id')
                         ->label('Name')
-                        ->options(Attribute::where('attribute_category_id', $cat->id)->pluck('name', 'id'))
+                        ->options(Attribute::where('department_id', $cat->id)->pluck('name', 'id'))
                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                         ->required()
                         ->live(),

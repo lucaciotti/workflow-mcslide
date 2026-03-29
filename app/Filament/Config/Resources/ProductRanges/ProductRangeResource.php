@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ProductRangeResource extends Resource
 {
@@ -22,6 +23,7 @@ class ProductRangeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::InboxStack;
 
+    protected static string | UnitEnum | null $navigationGroup = 'Anagrafiche';
     protected static ?string $recordTitleAttribute = 'Famiglia Prodotto';
     protected static ?string $modelLabel = 'Famiglia Prodotto';
     protected static ?string $pluralModelLabel = 'Famiglia Prodotti';

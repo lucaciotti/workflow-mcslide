@@ -26,7 +26,7 @@ class TasksExport implements FromQuery, WithMapping, WithHeadings, ShouldAutoSiz
                 array_push($attr_ids, intval(str_replace('attribute_', '', $key)));
             }
         };
-        $this->attributes = Attribute::whereIn('id', $attr_ids)->with('attribute_category')->get();
+        $this->attributes = Attribute::whereIn('id', $attr_ids)->with('department')->get();
         // dd($this->attributes);
     }
 
@@ -42,9 +42,9 @@ class TasksExport implements FromQuery, WithMapping, WithHeadings, ShouldAutoSiz
             if (str_starts_with($key, 'attribute_')) {
                 $id = intval(str_replace('attribute_', '', $key));
                 $attribute = $this->attributes->find($id);
-                // $subHead = [$attribute->attribute_category->name => '{attr_' . str_replace('attribute_', '', $key) . '} ' . $value->getLabel()];
+                // $subHead = [$attribute->department->name => '{attr_' . str_replace('attribute_', '', $key) . '} ' . $value->getLabel()];
                 // array_push($head, $subHead);
-                array_push($head, '{attr_' . str_replace('attribute_', '', $key) . '} '. $attribute->attribute_category->name . '_' . $value->getLabel());
+                array_push($head, '{attr_' . str_replace('attribute_', '', $key) . '} '. $attribute->department->name . '_' . $value->getLabel());
             } else {
                 array_push($head, '{'. str_replace('.', '-', $value->getName()).'} '. $value->getLabel());
             }

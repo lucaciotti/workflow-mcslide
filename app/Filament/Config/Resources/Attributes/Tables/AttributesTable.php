@@ -21,8 +21,8 @@ class AttributesTable
                     ->badge()
                     ->label('Tipologia')
                     ->searchable(),
-                TextColumn::make('attribute_category.name')
-                    ->label('Categoria')    
+                TextColumn::make('department.name')
+                    ->label('Reparto')    
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -37,7 +37,7 @@ class AttributesTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
+                // ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

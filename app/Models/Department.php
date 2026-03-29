@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class AttributeCategory extends Model implements Auditable
+class Department extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 

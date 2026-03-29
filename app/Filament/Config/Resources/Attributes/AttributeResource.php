@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class AttributeResource extends Resource
 {
@@ -22,6 +23,7 @@ class AttributeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedListBullet;
 
+    protected static string | UnitEnum | null $navigationGroup = 'Anagrafiche';
     protected static ?string $recordTitleAttribute = 'Attributo';
     protected static ?string $modelLabel = 'attributo';
     protected static ?string $pluralModelLabel = 'attributi';
@@ -52,9 +54,9 @@ class AttributeResource extends Resource
     {
         return [
             'index' => ListAttributes::route('/'),
-            'create' => CreateAttribute::route('/create'),
-            'view' => ViewAttribute::route('/{record}'),
-            'edit' => EditAttribute::route('/{record}/edit'),
+            // 'create' => CreateAttribute::route('/create'),
+            // 'view' => ViewAttribute::route('/{record}'),
+            // 'edit' => EditAttribute::route('/{record}/edit'),
         ];
     }
 }

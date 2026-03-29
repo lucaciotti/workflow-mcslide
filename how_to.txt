@@ -7,7 +7,7 @@ sail artisan make:model Customer -m
 sail artisan make:model ShippingAddress -m
 sail artisan make:model Task -m
 sail artisan make:model TaskRow -m
-sail artisan make:model AttributeCategory -m
+sail artisan make:model Department -m
 sail artisan make:model Attribute -m
 sail artisan make:model TaskAttributeValue -m
 
