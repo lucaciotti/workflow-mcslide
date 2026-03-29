@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\Permission\Models\Role;
@@ -27,5 +28,10 @@ class WorkflowState extends Model implements Auditable
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
+    }
+
+    public function gates(): HasMany
+    {
+        return $this->hasMany(WorkflowGate::class, 'id', 'workflow_state_id');
     }
 }
