@@ -14,10 +14,10 @@ class WorkflowTransitionForm
     {
         return $schema
             ->components([
-                Select::make('from_state_id')
+                Select::make('from_state_id')->label('Stato Partenza')
                     ->relationship('fromState', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $get('to_state_id') ? $query->where('id', '!=', $get('to_state_id')) : $query,)
                     ->live(),
-                Select::make('to_state_id')
+                Select::make('to_state_id')->label('Stato Arrivo')
                     ->relationship('toState', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $get('from_state_id') ? $query->where('id', '!=', $get('from_state_id')) : $query,)
                     ->live(),
                 Toggle::make('subflow_missing')->label('Flusso Mancanti'),

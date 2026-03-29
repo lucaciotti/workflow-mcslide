@@ -55,7 +55,7 @@ class WorkflowTransitionResource extends Resource
         return [
             'index' => ListWorkflowTransitions::route('/'),
             // 'create' => CreateWorkflowTransition::route('/create'),
-            'view' => ViewWorkflowTransition::route('/{record}'),
+            // 'view' => ViewWorkflowTransition::route('/{record}'),
             // 'edit' => EditWorkflowTransition::route('/{record}/edit'),
         ];
     }

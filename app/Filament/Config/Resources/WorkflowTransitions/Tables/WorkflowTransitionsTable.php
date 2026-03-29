@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -15,10 +16,12 @@ class WorkflowTransitionsTable
     {
         return $table
             ->columns([
-                TextColumn::make('fromState.name')
+                TextColumn::make('fromState.name')->label('Stato Partenza')
                     ->searchable(),
-                TextColumn::make('toState.name')
+                TextColumn::make('toState.name')->label('Stato Arrivo')
                     ->searchable(),
+                IconColumn::make('subflow_missing')->label('Flusso Mancanti')
+                    ->boolean(),
                 TextColumn::make('created_at')->label('Creato il')
                     ->dateTime()
                     ->sortable()
@@ -32,7 +35,7 @@ class WorkflowTransitionsTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
+                // ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([
