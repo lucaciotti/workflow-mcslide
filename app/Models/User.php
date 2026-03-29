@@ -7,6 +7,7 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Kirschbaum\Commentions\Contracts\Commenter;
@@ -30,6 +31,7 @@ class User extends Authenticatable implements Auditable, FilamentUser, Commenter
         'name',
         'email',
         'password',
+        'department_id'
     ];
 
     /**
@@ -62,5 +64,11 @@ class User extends Authenticatable implements Auditable, FilamentUser, Commenter
         }
 
         return true;
+    }
+
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 }

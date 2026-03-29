@@ -4,15 +4,20 @@ namespace App\Providers;
 
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Livewire\Notifications;
 use Filament\Panel as Panel;
 use Filament\Support\Assets\Js;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\Width;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
+use TomatoPHP\FilamentUsers\Filament\Resources\Users\Schemas\UserForm;
+use TomatoPHP\FilamentUsers\Filament\Resources\Users\Tables\UsersTable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -82,10 +87,34 @@ class AppServiceProvider extends ServiceProvider
                 // )
                 // ->filtersLayout(FiltersLayout::AboveContentCollapsible)
                 ->paginationPageOptions([25, 50, 100])
+                ->defaultPaginationPageOption(50)
                 ->deferFilters(false)
                 ->deferColumnManager(false);
         });
 
         Notifications::alignment(Alignment::Center);
+
+        UserForm::register([
+            Select::make('department_id')
+                ->label('Reparto di Riferimento')
+                ->relationship('department', 'name')
+                ->columnSpan(2)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->createOptionForm([
+                    TextInput::make('name')
+                        ->label('Nome Reparto')
+                        ->required()
+                        ->maxLength(255)
+                ]),
+        ]);
+        UsersTable::register([
+            TextColumn::make('department.name')->label('Reparto')
+                ->searchable(),
+        ]);
+        // UserFilters::register([
+        //     \Filament\Tables\Filters\SelectFilter::make('something')
+        // ]);
     }
 }

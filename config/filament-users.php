@@ -89,7 +89,7 @@ return [
      * ---------------------------------------------
      * change the resource from pages to modals by allow simple resource.
      */
-    'simple' => false,
+    'simple' => true,
 
     /**
      * ---------------------------------------------
@@ -146,9 +146,10 @@ return [
         ],
         'form' => [
             'class' => \TomatoPHP\FilamentUsers\Filament\Resources\Users\Schemas\UserForm::class,
-        ],
+            ],
         'infolist' => [
-            'class' => \TomatoPHP\FilamentUsers\Filament\Resources\Users\Schemas\UserInfolist::class,
+            'class' => \TomatoPHP\FilamentUsers\Filament\Resources\Users\Schemas\UserForm::class,
+            // 'class' => \TomatoPHP\FilamentUsers\Filament\Resources\Users\Schemas\UserInfolist::class,
         ],
     ],
 ];
