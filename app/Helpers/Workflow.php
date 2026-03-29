@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Task;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
 
@@ -24,6 +25,30 @@ class Workflow
             ->unique();
 
         return $states;
+    }
+
+    public function getNextAvailableState($tasks) {
+        $states = $this->getAllStates();
+        $states_ids = $states->pluck('id')->toArray();
+        $task = ($tasks instanceof Task) ? $tasks : $tasks->first();
+        if (in_array($task->workflow_state_id, $states_ids)) {
+            $productRange_id = $task->product_range_id;
+            return WorkflowTransition::query()
+                ->with(['fromState', 'toState'])
+                ->where('from_state_id', $task->workflow_state_id)
+                ->whereHas('toState', function ($query) use ($productRange_id) {
+                    $query
+                    ->whereHas('productRanges',  function($q) use ($productRange_id) {
+                        $q->where('product_range_id', $productRange_id);
+                    })
+                    ->whereDoesntHave('productRanges');
+                })
+                ->get()
+                ->pluck('toState.name', 'toState.id')
+                ->toArray();
+        } else {
+            return WorkflowState::query()->pluck('name', 'id')->toArray();
+        }
     }
 
     // Trasforma flusso per MaermaidJs

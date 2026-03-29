@@ -4,15 +4,18 @@ namespace App\Filament\Resources\Tasks\Tables;
 
 use App\Enums\TaskTypes;
 use App\Exports\TasksExport;
+use App\Helpers\Workflow;
 use App\Jobs\ImportTaskValues;
 use App\Models\Attribute;
 use App\Models\Department;
 use App\Models\Task;
 use App\Models\TaskValuesImportFile;
+use App\Models\TaskWorkflowStory;
 use App\Models\User;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
 use Barryvdh\DomPDF\Facade\Pdf;
+use DateTime;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -21,6 +24,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
@@ -163,25 +167,26 @@ class TasksTable
             // ViewAction::make(),
                 Action::make('transition')->label('Modifica Stato       ')->hiddenLabel(true)->tooltip('Modifica Stato')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
                     ->schema([
-                        Select::make('state_id')
+                        Select::make('state_id')->label('Avanza Stato')
                             ->searchable()
                             ->options(function (Task $record): array {
-                                $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
-                                $states = $transitions
-                                    ->pluck('fromState')
-                                    ->filter(fn(?WorkflowState $state) => !is_null($state))
-                                    ->merge($transitions->pluck('toState'))
-                                    ->unique();
-                                $states_ids = $states->pluck('id')->toArray();
-                                if (in_array($record->workflow_state_id, $states_ids)) {
-                                    return WorkflowTransition::query()->with(['fromState', 'toState'])->where('from_state_id', $record->workflow_state_id)->get()->pluck('toState.name', 'toState.id')->toArray();
-                                } else {
-                                    return WorkflowState::query()->pluck('name', 'id')->toArray();
-                                }
-                            })
+                                return (new Workflow)->getNextAvailableState($record);
+                            }),
+                        Textarea::make('comment')->label('Commento')
                     ])
                     ->action(function (array $data, Task $record) {
-                        // dd((int) $data['state_id']);
+                        // GESTIONE STORIA DELLO STATO
+                        // Prendo ultimo TaskHistoryAttivo
+                        $oldStory = TaskWorkflowStory::where('end', null)->where('task_id', $record->id)->first();
+                        if($oldStory){
+                            $oldStory->end = now();
+                            $oldStory->save();
+                        }
+                        $newStory = TaskWorkflowStory::create([
+                            'task_id' => $record->id,
+                            'workflow_state_id' => (int)  $data['state_id'],
+                            'comment' => $data['comment'],
+                            ]);
                         $record->workflow_state_id = (int) $data['state_id'];
                         $record->save();
                     }),
@@ -192,17 +197,73 @@ class TasksTable
             ->toolbarActions([
                 ManageTablePresetAction::make()->label('')->outlined(),
                 BulkActionGroup::make([
-                    BulkAction::make('Genera Report')
-                        ->icon('heroicon-m-arrow-down-tray')
-                        ->openUrlInNewTab()
-                        ->deselectRecordsAfterCompletion()
-                        ->action(function (Collection $records) {
-                            return response()->streamDownload(function () use ($records) {
-                                echo Pdf::loadHTML(
-                                    Blade::render('export.pdf.task', ['records' => $records])
-                                )->setPaper('a4', 'landscape')->stream();
-                            }, 'Ordini_pianificati.pdf');
-                        }),
+                // BulkAction::make('Genera Report')
+                //     ->icon('heroicon-m-arrow-down-tray')
+                //     ->openUrlInNewTab()
+                //     ->deselectRecordsAfterCompletion()
+                //     ->action(function (Collection $records) {
+                //         return response()->streamDownload(function () use ($records) {
+                //             echo Pdf::loadHTML(
+                //                 Blade::render('export.pdf.task', ['records' => $records])
+                //             )->setPaper('a4', 'landscape')->stream();
+                //         }, 'Ordini_pianificati.pdf');
+                //     }),
+
+                BulkAction::make('transition')->label('Modifica Stato')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
+                    ->schema([
+                        Select::make('state_id')->label('Avanza Stato')
+                            ->searchable()
+                            ->options(function (Task $record): array {
+                                return (new Workflow)->getNextAvailableState($record);
+                            }),
+                        Textarea::make('comment')->label('Commento')
+                    ])
+                    // ->action(function (array $data, BulkAction $action, Collection $records) {
+                    //     // GESTIONE STORIA DELLO STATO
+                    //     // Prendo ultimo TaskHistoryAttivo
+                    //     $oldStory = TaskWorkflowStory::where('end', null)->where('task_id', $record->id)->first();
+                    //     if ($oldStory) {
+                    //         $oldStory->end = now();
+                    //         $oldStory->save();
+                    //     }
+                    //     $newStory = TaskWorkflowStory::create([
+                    //         'task_id' => $record->id,
+                    //         'workflow_state_id' => (int)  $data['state_id'],
+                    //         'comment' => $data['comment'],
+                    //     ]);
+                    //     $record->workflow_state_id = (int) $data['state_id'];
+                    //     $record->save();
+                    // }),
+                    // ->action(function (BulkAction $action, Collection $records) {
+                    //     $records->each(function (Model $record) use ($action) {
+                    //         $record->delete() || $action->reportBulkProcessingFailure(
+                    //             'deletion_failed',
+                    //             message: function (int $failureCount, int $totalCount): string {
+                    //                 if (($failureCount === 1) && ($totalCount === 1)) {
+                    //                     return 'One user failed to delete.';
+                    //                 }
+
+                    //                 if ($failureCount === $totalCount) {
+                    //                     return 'All users failed to delete.';
+                    //                 }
+
+                    //                 if ($failureCount === 1) {
+                    //                     return 'One of the selected users failed to delete.';
+                    //                 }
+
+                    //                 return "{$failureCount} of the selected users failed to delete.";
+                    //             },
+                    //         );
+                    //     });
+                    // })
+                    ->successNotificationTitle('Deleted users')
+                    ->failureNotificationTitle(function (int $successCount, int $totalCount): string {
+                        if ($successCount) {
+                            return "{$successCount} of {$totalCount} users deleted";
+                        }
+
+                        return 'Failed to delete any users';
+                    })
 
                 // DeleteBulkAction::make(),
                 ]),

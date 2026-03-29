@@ -80,4 +80,9 @@ class Task extends Model implements Auditable, Commentable
     {
         return $this->belongsTo(WorkflowState::class, 'workflow_state_id', 'id');
     }
+
+    public function workflowStory(): HasMany
+    {
+        return $this->hasMany(TaskWorkflowStory::class);
+    }
 }

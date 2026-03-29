@@ -3,17 +3,21 @@
 namespace App\Filament\Resources\Tasks\Schemas;
 
 use App\Enums\TaskTypes;
+use App\Helpers\Workflow;
 use App\Models\Attribute;
 use App\Models\Department;
 use App\Models\Task;
+use App\Models\TaskWorkflowStory;
 use App\Models\WorkflowState;
 use App\Models\WorkflowTransition;
+use DateTime;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
@@ -155,25 +159,26 @@ class TaskForm
                             ->preload(),
                         Action::make('transition')->label('Modifica Stato       ')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
                             ->schema([
-                                Select::make('state_id')
+                                Select::make('state_id')->label('Avanza Stato')
                                     ->searchable()
                                     ->options(function (Task $record): array {
-                                        $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
-                                        $states = $transitions
-                                            ->pluck('fromState')
-                                            ->filter(fn(?WorkflowState $state) => !is_null($state))
-                                            ->merge($transitions->pluck('toState'))
-                                            ->unique();
-                                        $states_ids = $states->pluck('id')->toArray();
-                                        if(in_array($record->workflow_state_id, $states_ids)){
-                                            return WorkflowTransition::query()->with(['fromState', 'toState'])->where('from_state_id', $record->workflow_state_id)->get()->pluck('toState.name', 'toState.id')->toArray();
-                                        } else {
-                                            return WorkflowState::query()->pluck('name', 'id')->toArray();
-                                        }
-                                    })
+                                        return (new Workflow)->getNextAvailableState($record);
+                                    }),
+                                Textarea::make('comment')->label('Commento')
                             ])
                             ->action(function (array $data, Task $record) {
-                                // dd((int) $data['state_id']);
+                                // GESTIONE STORIA DELLO STATO
+                                // Prendo ultimo TaskHistoryAttivo
+                                $oldStory = TaskWorkflowStory::where('end', null)->where('task_id', $record->id)->first();
+                                if($oldStory){
+                                    $oldStory->end = now();
+                                    $oldStory->save();
+                                }
+                                $newStory = TaskWorkflowStory::create([
+                                    'task_id' => $record->id,
+                                    'workflow_state_id' => (int) $data['state_id'],
+                                    'comment' => $data['comment'],
+                                    ]);
                                 $record->workflow_state_id = (int) $data['state_id'];
                                 $record->save();
                             }),
