@@ -3,6 +3,7 @@
 namespace App\Filament\Config\Resources\WorkflowTransitions\Schemas;
 
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,7 @@ class WorkflowTransitionForm
                 Select::make('to_state_id')
                     ->relationship('toState', 'name', modifyQueryUsing: fn(Builder $query, Get $get) => $get('from_state_id') ? $query->where('id', '!=', $get('from_state_id')) : $query,)
                     ->live(),
+                Toggle::make('subflow_missing')->label('Flusso Mancanti'),
             ]);
     }
 }

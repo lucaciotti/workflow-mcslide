@@ -37,6 +37,7 @@ class Workflow
                 }%%\n";
         }
         $mermaid .= "flowchart TB\n";
+        $mermaid .= "classDef subflow_missing stroke:#f00\n";
         $transitions = WorkflowTransition::with(['fromState', 'toState'])->get();
 
         $states = $transitions
@@ -70,9 +71,16 @@ class Workflow
             $mermaid .= $state->id . "(" . $state->name . ")\n";
         }
 
+        $n_links = 0;
         foreach ($transitions as $transition) {
             // $mermaid .= ($transition->fromState?->id ?? 0) . " -- " . $transition->action->name . " --> " . $transition->toState->id . "\n";
-            $mermaid .= ($transition->fromState?->id ?? 0) . " --> " . $transition->toState->id . "\n";
+            $mermaid .= ($transition->fromState?->id ?? 0);
+            // $mermaid .= $transition->subflow_missing  ? ":::subflow_missing" : "";
+            $mermaid .= " --> ";
+            $mermaid .= $transition->subflow_missing  ? "|Flusso Mancanti|" : "";
+            $mermaid .= $transition->toState->id . "\n";
+            $mermaid .= $transition->subflow_missing  ? "linkStyle ". $n_links ." stroke:orange,stroke-width:2px,color:red;" : "";
+            $n_links++;
         }
         // return preg_split("/\r\n|\n|\r/", $mermaid);
         return $mermaid;
