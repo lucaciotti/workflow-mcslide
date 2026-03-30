@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -13,13 +14,13 @@ class Product extends Model
     ];
 
 
-    public function productRange(): HasOne
+    public function productRange(): BelongsTo
     {
-        return $this->hasOne(ProductRange::class);
+        return $this->belongsTo(ProductRange::class);
     }
     
     public function gates(): HasMany
     {
-        return $this->hasMany(WorkflowGate::class, 'id', 'product_id');
+        return $this->hasMany(WorkflowGate::class, 'product_id', 'id');
     }
 }

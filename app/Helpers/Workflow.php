@@ -27,21 +27,24 @@ class Workflow
         return $states;
     }
 
-    public function getNextAvailableState($tasks) {
+    public function getNextAvailableState($task=null) {
         $states = $this->getAllStates();
         $states_ids = $states->pluck('id')->toArray();
-        $task = ($tasks instanceof Task) ? $tasks : $tasks->first();
-        if (in_array($task->workflow_state_id, $states_ids)) {
+        // $task = ($tasks instanceof Task) ? $tasks : $tasks->first();
+        if ($task && in_array($task->workflow_state_id, $states_ids)) {
             $productRange_id = $task->product_range_id;
             return WorkflowTransition::query()
                 ->with(['fromState', 'toState'])
                 ->where('from_state_id', $task->workflow_state_id)
                 ->whereHas('toState', function ($query) use ($productRange_id) {
-                    $query
-                    ->whereHas('productRanges',  function($q) use ($productRange_id) {
-                        $q->where('product_range_id', $productRange_id);
-                    })
-                    ->whereDoesntHave('productRanges');
+                    $query->where(function ($qToState) use ($productRange_id) {
+                        $qToState
+                        ->where('has_product_range', true)
+                        ->whereHas('productRanges',  function ($q) use ($productRange_id) {
+                            $q->where('product_range_id', $productRange_id);
+                        });
+                    })->orWhere('has_product_range', false);                    
+                    // ->orWhereDoesntHave('productRanges');
                 })
                 ->get()
                 ->pluck('toState.name', 'toState.id')

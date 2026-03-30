@@ -78,7 +78,7 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
     {
         $workflowStates = (new Workflow)->getAllStates();
         $statesNotWorkflow = WorkflowState::whereNotIn('id', $workflowStates->pluck('id'))->get();
-        $tabs = ['Tutti' => Tab::make()];
+        // $tabs = ['Tutti' => Tab::make()];
         $departments = [];
         $existWorflowStatesWithoutDepartment = false;
         foreach ($workflowStates as $state) {
@@ -121,12 +121,33 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
         //         ->visible($count>0)
         //         ->modifyQueryUsing(fn(Builder $query) => $query->where('workflow_state_id', $state->id));
         // }
-        $count = Task::query()->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->count();
+        $count = Task::query()->where('workflow_state_id', null)->count();
+        // $count = Task::query()->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->count();
         $tabs['WORKFLOW ASSENTE!'] = Tab::make()
             ->badge($count)
             ->badgeColor('danger')
             ->visible($count>0)
-            ->modifyQueryUsing(fn(Builder $query) => $query->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id')));
+            ->modifyQueryUsing(fn(Builder $query) => $query->where('workflow_state_id', null));
+            // ->modifyQueryUsing(fn(Builder $query) => $query->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id')));
+
+        $count = Task::query()->where('suspended', true)->count();
+        $tabs['SOSPESI!'] = Tab::make()
+            ->badge($count)
+            ->badgeColor('warning')
+            ->visible($count>0)
+            ->modifyQueryUsing(fn(Builder $query) => $query->where('suspended', true));
+        $count = Task::query()->where('deleted', true)->count();
+        $tabs['CANCELLATI!'] = Tab::make()
+            ->badge($count)
+            ->badgeColor('danger')
+            ->visible($count>0)
+            ->modifyQueryUsing(fn(Builder $query) => $query->where('deleted', true));
+        $count = Task::query()->where('ended', true)->count();
+        $tabs['TERMINATI!'] = Tab::make()
+            ->badge($count)
+            ->visible($count>0)
+            ->modifyQueryUsing(fn(Builder $query) => $query->where('ended', true));
+
         return $tabs;
     }
 }

@@ -40,11 +40,9 @@ class ProductForm
                                     ->label('Stato')
                                     ->relationship('workflowState', 'name')
                                     ->searchable()
-                                    ->preload()
-                                    ->required(),
+                                    ->preload(),
                                 TextInput::make('gate_days')->label('n.Giorni Gate')
                                     ->visible()
-                                    ->required()
                                     ->numeric(),
                             ]),
                     ]),

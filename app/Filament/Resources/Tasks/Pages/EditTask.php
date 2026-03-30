@@ -19,7 +19,7 @@ class EditTask extends EditRecord
             // ViewAction::make(),
             CommentsAction::make()
                 ->mentionables(User::all()),
-            DeleteAction::make(),
+            // DeleteAction::make(),
         ];
     }
 }

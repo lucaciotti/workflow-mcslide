@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class WorkflowGate extends Model
@@ -12,13 +13,13 @@ class WorkflowGate extends Model
     ];
 
 
-    public function product(): HasOne
+    public function product(): BelongsTo
     {
-        return $this->hasOne(Product::class);
+        return $this->belongsTo(Product::class);
     }
     
-    public function workflowState(): HasOne
+    public function workflowState(): BelongsTo
     {
-        return $this->hasOne(WorkflowState::class);
+        return $this->belongsTo(WorkflowState::class);
     }
 }

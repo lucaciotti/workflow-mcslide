@@ -23,8 +23,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
@@ -36,11 +40,13 @@ use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Kirschbaum\Commentions\Filament\Actions\CommentsAction;
 use Maatwebsite\Excel\Facades\Excel;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\ExportAction;
 use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
@@ -58,32 +64,50 @@ class TasksTable
                 if ($attr->type=='date'){
                         array_push(
                             $singleAttrRepeaters,
-                            TextInputColumn::make('attribute_'.$attr->id)->type('datetime-local')
-                                ->getStateUsing(fn($record) =>
-                                $record->attributeValues()
-                                    ->where('attribute_id', $attr->id)->first()->value->toDateTimeLocalString() ?? '-')
+                            TextColumn::make('attribute_'.$attr->id)->type('datetime-local')
+                                ->getStateUsing(fn($record) => $record->attributeValues()->where('attribute_id', $attr->id)->first()->value->toDateTimeLocalString() ?? '-')
                                 ->label($attr->name)
-                                ->beforeStateUpdated(function ($record, $state) use ($attr) {
-                                    $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
-                                })
-                                ->updateStateUsing(function ($record, $state) { return $state; })
+                                // ->beforeStateUpdated(function ($record, $state) use ($attr) {
+                                //     $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
+                                // })
+                                // ->updateStateUsing(function ($record, $state) { return $state; })
                                 ->sortable()
                                 ->toggleable(),
+                            // TextInputColumn::make('attribute_'.$attr->id)->type('datetime-local')
+                            //     ->getStateUsing(fn($record) =>
+                            //     $record->attributeValues()
+                            //         ->where('attribute_id', $attr->id)->first()->value->toDateTimeLocalString() ?? '-')
+                            //     ->label($attr->name)
+                            //     ->beforeStateUpdated(function ($record, $state) use ($attr) {
+                            //         $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
+                            //     })
+                            //     ->updateStateUsing(function ($record, $state) { return $state; })
+                            //     ->sortable()
+                            //     ->toggleable(),
                         );                
                     } else {
                         array_push(
                             $singleAttrRepeaters,
-                            TextInputColumn::make('attribute_'.$attr->id)
-                                ->getStateUsing(fn($record) =>
-                                $record->attributeValues()
-                                    ->where('attribute_id', $attr->id)->first()->value ?? '-')
+                            TextColumn::make('attribute_'.$attr->id)
+                                ->getStateUsing(fn($record) => $record->attributeValues()->where('attribute_id', $attr->id)->first()->value ?? '-')
                                 ->label($attr->name)
-                                ->beforeStateUpdated(function ($record, $state) use ($attr) {
-                                    $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
-                                })
-                                ->updateStateUsing(function ($record, $state) { return $state; })
+                                // ->beforeStateUpdated(function ($record, $state) use ($attr) {
+                                //     $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
+                                // })
+                                // ->updateStateUsing(function ($record, $state) { return $state; })
                                 ->sortable()
                                 ->toggleable(),
+                            // TextInputColumn::make('attribute_'.$attr->id)
+                            //     ->getStateUsing(fn($record) =>
+                            //     $record->attributeValues()
+                            //         ->where('attribute_id', $attr->id)->first()->value ?? '-')
+                            //     ->label($attr->name)
+                            //     ->beforeStateUpdated(function ($record, $state) use ($attr) {
+                            //         $record->attributeValues()->updateOrCreate(['attribute_id' => $attr->id, 'value' => $state]);
+                            //     })
+                            //     ->updateStateUsing(function ($record, $state) { return $state; })
+                            //     ->sortable()
+                            //     ->toggleable(),
                         );                
                     }
             }
@@ -123,7 +147,12 @@ class TasksTable
                 TextColumn::make('carrier')->label('Vettore')
                     ->searchable()
                     ->toggleable(),
+                TextColumn::make('product.code')->label('Prodotto')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('productRange.name')->label('Fam.Prodotto')
+                    ->placeholder('- ATTENZIONE -')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -190,9 +219,46 @@ class TasksTable
                         $record->workflow_state_id = (int) $data['state_id'];
                         $record->save();
                     }),
+                ViewAction::make('workflow_story')->label('Storia Stati')->hiddenLabel(true)->tooltip('Storia Stati')->outlined()->icon(Heroicon::BarsArrowDown)->color('success')
+                    ->schema([
+                    Repeater::make('workflowStories')->label('Storia Stati')->columns(2)->hiddenLabel(true)->relationship()
+                        ->table([
+                            TableColumn::make('Data inizio')->width('200px'),
+                            TableColumn::make('Stato'),
+                            TableColumn::make('Commento'),
+                            TableColumn::make('Data fine')->width('200px'),
+                        ])
+                        // ->compact()
+                        ->schema([
+                            DateRangePicker::make('start'),
+                            TextEntry::make('workflowState.name')->hiddenLabel(),
+                            Textarea::make('comment')->label('Commento'),
+                            DateRangePicker::make('end'),
+                        ]),
+                ]),
                 CommentsAction::make()->hiddenLabel(true)->tooltip('Commenti')
                     ->mentionables(User::all()),
                 EditAction::make()->hiddenLabel(true)->tooltip('Modifica'),
+                ViewAction::make('missing_view')->label('Visualizza Codici Mancanti')->hiddenLabel(true)->tooltip('Visualizza Codici Mancanti')->outlined()->extraAttributes(['class' >= 'w-full'])->icon(Heroicon::OutlinedExclamationTriangle)->color('success')
+                    ->visible(fn(Task $record): bool => $record->has_missing ?? false)
+                    ->schema([
+                        Repeater::make('missings')->label('Mancanti')->columns(2)->hiddenLabel(true)->relationship()
+                        ->table([
+                            TableColumn::make('Codice Componente'),
+                            TableColumn::make('Qta')->width('200px'),
+                        ])
+                        // ->compact()
+                        ->schema([
+                            Select::make('component_id')
+                                ->label('Componente')
+                                ->relationship('component', 'code')
+                                ->searchable()
+                                ->preload(),
+                            TextInput::make('qty')->label('Qta')
+                                ->visible()
+                                ->numeric(),
+                        ]),
+                    ])
             ])->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 ManageTablePresetAction::make()->label('')->outlined(),
@@ -209,61 +275,97 @@ class TasksTable
                 //         }, 'Ordini_pianificati.pdf');
                 //     }),
 
-                BulkAction::make('transition')->label('Modifica Stato')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
+                BulkAction::make('transition')->label('Modifica Stato')->outlined()->icon(Heroicon::ArrowRightStartOnRectangle)->color('info')
+                    // ->accessSelectedRecords()
                     ->schema([
                         Select::make('state_id')->label('Avanza Stato')
                             ->searchable()
-                            ->options(function (Task $record): array {
-                                return (new Workflow)->getNextAvailableState($record);
+                            ->options(function (Collection $records): array {
+                                // dd($records);
+                                return (new Workflow)->getNextAvailableState();
                             }),
                         Textarea::make('comment')->label('Commento')
                     ])
-                    // ->action(function (array $data, BulkAction $action, Collection $records) {
-                    //     // GESTIONE STORIA DELLO STATO
-                    //     // Prendo ultimo TaskHistoryAttivo
-                    //     $oldStory = TaskWorkflowStory::where('end', null)->where('task_id', $record->id)->first();
-                    //     if ($oldStory) {
-                    //         $oldStory->end = now();
-                    //         $oldStory->save();
-                    //     }
-                    //     $newStory = TaskWorkflowStory::create([
-                    //         'task_id' => $record->id,
-                    //         'workflow_state_id' => (int)  $data['state_id'],
-                    //         'comment' => $data['comment'],
-                    //     ]);
-                    //     $record->workflow_state_id = (int) $data['state_id'];
-                    //     $record->save();
-                    // }),
-                    // ->action(function (BulkAction $action, Collection $records) {
-                    //     $records->each(function (Model $record) use ($action) {
-                    //         $record->delete() || $action->reportBulkProcessingFailure(
-                    //             'deletion_failed',
-                    //             message: function (int $failureCount, int $totalCount): string {
-                    //                 if (($failureCount === 1) && ($totalCount === 1)) {
-                    //                     return 'One user failed to delete.';
-                    //                 }
-
-                    //                 if ($failureCount === $totalCount) {
-                    //                     return 'All users failed to delete.';
-                    //                 }
-
-                    //                 if ($failureCount === 1) {
-                    //                     return 'One of the selected users failed to delete.';
-                    //                 }
-
-                    //                 return "{$failureCount} of the selected users failed to delete.";
-                    //             },
-                    //         );
-                    //     });
-                    // })
-                    ->successNotificationTitle('Deleted users')
-                    ->failureNotificationTitle(function (int $successCount, int $totalCount): string {
-                        if ($successCount) {
-                            return "{$successCount} of {$totalCount} users deleted";
+                    ->action(function (array $data, BulkAction $action, Collection $records) {
+                        //  CONTROLLO CHE I RECORD SELEZIONATI ABBIANO LO STESSO STATO DI PARTENZA E CHE LO STATO DI ARRIVO NON CONTENGA FAMIGLIE PRODOTTO
+                        $lastRecordStateId = null;
+                        $lastProductRangeId = null;
+                        $mustSameProductRange = false;
+                        $stateTo = WorkflowState::find((int) $data['state_id']);
+                        if($stateTo->has_product_range && $stateTo->productRanges->count()>0){
+                            $mustSameProductRange = true;
                         }
+                        // dd($records);
+                        $records->each(function (Model $record) use ($action, $lastRecordStateId, $lastProductRangeId, $mustSameProductRange) {
+                            if ($lastRecordStateId==null) {
+                                $lastRecordStateId = $record->workflow_state_id;
+                            }
+                            if ($lastRecordStateId != $record->workflow_state_id) {
+                                $action->reportBulkProcessingFailure(
+                                'state_not_same',
+                                message: 'Una o più righe hanno Stato differente.');
+                            }
+                            if ($mustSameProductRange){
+                                if ($lastProductRangeId==null) {
+                                    $lastProductRangeId = $record->product_range_id;
+                                }
+                                if ($lastProductRangeId != $record->product_range_id) {
+                                    $action->reportBulkProcessingFailure(
+                                        'productrange_not_same',
+                                        message: 'Una o più righe hanno Famiglia Prodotto differente.'
+                                    );
+                                }
+                            }
 
-                        return 'Failed to delete any users';
-                    })
+                        });
+                        // GESTIONE STORIA DELLO STATO
+                        // Prendo ultimo TaskHistoryAttivo
+                        $records->each(function (Model $record) use ($data) {
+                            $oldStory = TaskWorkflowStory::where('end', null)->where('task_id', $record->id)->first();
+                            if ($oldStory) {
+                                $oldStory->end = now();
+                                $oldStory->save();
+                            }
+                            $newStory = TaskWorkflowStory::create([
+                                'task_id' => $record->id,
+                                'workflow_state_id' => (int)  $data['state_id'],
+                                'comment' => $data['comment'],
+                            ]);
+                            $record->workflow_state_id = (int) $data['state_id'];
+                            $record->save();
+                        });
+                    })->after(fn($livewire) => $livewire->resetTable())
+                    ->successNotificationTitle('Modifica Stati Avvenuta')
+                    ->failureNotificationTitle('Fallita Modifica Stati'),
+
+                BulkAction::make('Sospendi')->outlined()->icon(Heroicon::OutlinedPauseCircle)->color('warning')
+                    ->requiresConfirmation()
+                    ->action(function(Collection $records) { 
+                        $records->each(function (Model $record) {
+                            $record->suspended = true;
+                            $record->save();
+                        });
+                    })->after(fn($livewire) => $livewire->resetTable()),
+
+                BulkAction::make('Riprendi')->outlined()->icon(Heroicon::OutlinedPlayCircle)->color('success')
+                    ->requiresConfirmation()
+                    ->action(function (Collection $records) {
+                        $records->each(function (Model $record) {
+                            $record->suspended = false;
+                            $record->save();
+                        });
+                    })->after(fn($livewire) => $livewire->resetTable()),
+
+                BulkAction::make('Cancella')->outlined()->icon(Heroicon::OutlinedTrash)->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function(Collection $records) { 
+                        $records->each(function (Model $record) {
+                            $record->deleted = true;
+                            $record->save();
+                        });
+                        // redirect(static::getUrl('index'));
+                    })->after(fn($livewire) => $livewire->resetTable()),
+
 
                 // DeleteBulkAction::make(),
                 ]),

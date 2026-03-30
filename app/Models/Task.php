@@ -71,6 +71,11 @@ class Task extends Model implements Auditable, Commentable
         return $this->belongsTo(ShippingAddress::class);
     }
 
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
     public function productRange(): BelongsTo
     {
         return $this->belongsTo(ProductRange::class);
@@ -81,8 +86,13 @@ class Task extends Model implements Auditable, Commentable
         return $this->belongsTo(WorkflowState::class, 'workflow_state_id', 'id');
     }
 
-    public function workflowStory(): HasMany
+    public function workflowStories(): HasMany
     {
         return $this->hasMany(TaskWorkflowStory::class);
+    }
+
+    public function missings(): HasMany
+    {
+        return $this->hasMany(TaskMissing::class);
     }
 }

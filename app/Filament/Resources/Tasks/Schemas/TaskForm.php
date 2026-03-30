@@ -20,6 +20,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -27,6 +29,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class TaskForm
 {
@@ -136,7 +139,16 @@ class TaskForm
                 TextInput::make('carrier')->label('Vettore')
                     ->disabled()
                     ->default(''),
-                DatePicker::make('date_shipping')->label('Data Spedizione'),
+                DatePicker::make('date_shipping')->label('Data Spedizione')->columnSpan(2),
+                Select::make('product_id')->label('Prodotto')
+                    ->relationship('product', 'code')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('code')
+                            ->required()
+                            ->maxLength(255),
+                    ]),
                 Select::make('product_range_id')->label('Famiglia Prodotto')
                     ->relationship('productRange', 'name')
                     ->searchable()
@@ -146,12 +158,12 @@ class TaskForm
                             ->required()
                             ->maxLength(255),
                     ]),
-                Toggle::make('box_glass')->label('Vetro'),
-                Toggle::make('compensatori')->label('Compensatori'),
-                Toggle::make('binari')->label('Lav.su Binari'),
+                Toggle::make('box_glass')->label('Vetro')->columnSpan(2),
+                Toggle::make('compensatori')->label('Compensatori')->columnSpan(2),
+                Toggle::make('binari')->label('Lav.su Binari')->columnSpan(2),
                 ]),
                 Section::make('Gestione')->schema([
-                    Fieldset::make('Stato')->schema([
+                    Fieldset::make('Stato')->columns(2)->schema([
                         Select::make('workflow_state_id')->hiddenLabel()
                             ->relationship('workFlowState', 'name')
                             ->disabled(true)
@@ -182,20 +194,94 @@ class TaskForm
                                 $record->workflow_state_id = (int) $data['state_id'];
                                 $record->save();
                             }),
-                    ]),
-                    Fieldset::make('Mancanti')->schema([
-                        Action::make('mancanti')->label('Dichiara Codici Mancanti')->outlined()->extraAttributes(['class' >= 'w-full'])->icon(Heroicon::ArrowRightStartOnRectangle)->color('warning')
+                        ViewAction::make('workflow_story')->label('Storia Stati')->outlined()->icon(Heroicon::BarsArrowDown)->color('success')
                             ->schema([
-                                TextInput::make('codice')
-                                ->required()
-                                ->maxLength(255),
+                                Repeater::make('workflowStories')->label('Storia Stati')->columns(2)->hiddenLabel(true)->relationship()
+                                ->table([
+                                    TableColumn::make('Data inizio')->width('200px'),
+                                    TableColumn::make('Stato'),
+                                    TableColumn::make('Commento'),
+                                    TableColumn::make('Data fine')->width('200px'),
+                                ])
+                                // ->compact()
+                                ->schema([
+                                    DateRangePicker::make('start'),
+                                    TextEntry::make('workflowState.name')->hiddenLabel(),
+                                    Textarea::make('comment')->label('Commento'),
+                                    DateRangePicker::make('end'),
+                                ]),
                             ])
-                            ->action(function (array $data, Task $record) {
-                                // dd((int) $data['state_id']);
-                                // $record->workflow_state_id = (int) $data['state_id'];
-                                // $record->save();
-                            }),
                     ]),
+                    Fieldset::make('Mancanti')
+                        ->visible(fn(Get $get, Task $record): bool => (WorkflowTransition::where('from_state_id', $get('workflow_state_id'))->where('subflow_missing', true)->first()?->subflow_missing ?? false) || ($record->has_missing ?? false))
+                        ->schema([
+                            Action::make('missing')->label('Dichiara Codici Mancanti')->outlined()->extraAttributes(['class' >= 'w-full'])->icon(Heroicon::OutlinedExclamationTriangle)->color('warning')
+                                ->visible(fn(Get $get, Task $record): bool => (WorkflowTransition::where('from_state_id', $get('workflow_state_id'))->where('subflow_missing', true)->first()?->subflow_missing ?? false) && (!$record->has_missing ?? false))
+                                ->schema([
+                                    Repeater::make('missings')->label('Mancanti')->columns(2)->hiddenLabel(true)->relationship()
+                                    ->table([
+                                        TableColumn::make('Codice Componente'),
+                                        TableColumn::make('Qta')->width('200px'),
+                                    ])
+                                    // ->compact()
+                                    ->schema([
+                                        Select::make('component_id')
+                                            ->label('Componente')
+                                            ->relationship('component', 'code')
+                                            ->searchable()
+                                            ->preload(),
+                                        TextInput::make('qty')->label('Qta')
+                                            ->visible()
+                                            ->numeric(),
+                                    ]),
+                                ])
+                                ->action(function (array $data, Task $record, EditRecord $livewire) {
+                                    // dd($record);
+                                    if($record->missings->count()>0){
+                                        $record->has_missing = true;
+                                    }
+                                    // CAMBIO ANCHE STATO al TASK
+                                    $nextState = WorkflowTransition::where('from_state_id', $record->workflow_state_id)->where('subflow_missing', true)->first();
+                                    $oldStory = TaskWorkflowStory::where('end', null)->where('task_id', $record->id)->first();
+                                    if ($oldStory) {
+                                        $oldStory->end = now();
+                                        $oldStory->save();
+                                    }
+                                    $newStory = TaskWorkflowStory::create([
+                                        'task_id' => $record->id,
+                                        'workflow_state_id' => (int)  $nextState->toState->id,
+                                        'comment' => 'SEGNALAZIONE MANCANTI!',
+                                    ]);
+                                    $record->workflow_state_id = (int)  $nextState->toState->id;
+                                    $livewire->save();
+                                    $livewire->refreshFormData([
+                                        'status',
+                                    ]);
+                                    // dd((int) $data['state_id']);
+                                    // $record->workflow_state_id = (int) $data['state_id'];
+                                    // $record->save();
+                                }),
+                            ViewAction::make('missing_view')->label('Visualizza Codici Mancanti')->outlined()->extraAttributes(['class' >= 'w-full'])->icon(Heroicon::OutlinedExclamationTriangle)->color('success')
+                                ->visible(fn(Task $record): bool => $record->has_missing ?? false)
+                                ->schema([
+                                    Repeater::make('missings')->label('Mancanti')->columns(2)->hiddenLabel(true)->relationship()
+                                    ->table([
+                                        TableColumn::make('Codice Componente'),
+                                        TableColumn::make('Qta')->width('200px'),
+                                    ])
+                                    // ->compact()
+                                    ->schema([
+                                        Select::make('component_id')
+                                            ->label('Componente')
+                                            ->relationship('component', 'code')
+                                            ->searchable()
+                                            ->preload(),
+                                        TextInput::make('qty')->label('Qta')
+                                            ->visible()
+                                            ->numeric(),
+                                    ]),
+                                ])
+                        ]),
                 ]),
                 ...$attrRepeaters
                 

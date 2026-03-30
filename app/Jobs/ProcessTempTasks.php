@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Task;
 use App\Models\TaskImportFile;
 use App\Models\TaskRow;
+use App\Models\TaskWorkflowStory;
 use App\Models\User;
 use App\Models\WorkflowState;
 use Carbon\Carbon;
@@ -44,7 +45,7 @@ class ProcessTempTasks implements ShouldQueue
     public function handle()
     {
         Log::info('ProcessTempTasks Job Started');
-        $this->analizeTempTasks();
+        // $this->analizeTempTasks();
         try {
             DB::transaction(function () {
                 $tempTasks = $this->importedfile->tempTasks;
@@ -53,8 +54,18 @@ class ProcessTempTasks implements ShouldQueue
                     $dataTaskRow = [];
                     $task = null;
                     $newTask = false;
-                    if ($tempTask->selected) {
+                    // if ($tempTask->selected) {
                         $dataTask = $tempTask->toArray();
+                        $task_wheredata = [
+                            ['num', $tempTask->num],
+                            ['customer_id', $tempTask->customer_id],
+                            ['date', $tempTask->date],
+                            ['type', $tempTask->type],
+                        ];
+                        $task = Task::where($task_wheredata)->first();
+                        if ($task != null) {
+                            $tempTask->task_id = $task->id;
+                        }
                         if (empty($tempTask->task_id)) {
                             $task = Task::create($dataTask);
                             $newTask = true;
@@ -70,10 +81,13 @@ class ProcessTempTasks implements ShouldQueue
                             // Gestione Stato Flusso
                             $erpState = $tempTask->erpState;
                             if ($erpState){
-                                $workflow_state = WorkflowState::whereHas('erpStates', function($query) use ($erpState) {
-                                    $query->where('erp_state_id', $erpState->id);
-                                })->first();
+                                $workflow_state = WorkflowState::whereHas('erpStates', function($query) use ($erpState) {$query->where('erp_state_id', $erpState->id);})->first();
                                 if ($workflow_state) {
+                                    $newStory = TaskWorkflowStory::create([
+                                        'task_id' => $task->id,
+                                        'workflow_state_id' => $workflow_state->id,
+                                        'comment' => 'Stato Iniziale da Import XLS',
+                                    ]);
                                     $task->workflow_state_id = $workflow_state->id;
                                 }
                             }
@@ -105,7 +119,7 @@ class ProcessTempTasks implements ShouldQueue
                                 $tempTaskRow->save();
                                 $n_row++;
                             }
-                        }
+                        // }
                         $task->save();
                     }
                 }

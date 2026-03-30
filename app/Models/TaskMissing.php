@@ -6,17 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class TaskWorkflowStory extends Model
+class TaskMissing extends Model
 {
-    protected $guarded = ['id'];
+    protected $guarded = [
+        'id'
+    ];
 
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
     }
-    
-    public function workflowState(): BelongsTo
+
+    public function component(): BelongsTo
     {
-        return $this->belongsTo(WorkflowState::class);
+        return $this->belongsTo(Component::class);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 }

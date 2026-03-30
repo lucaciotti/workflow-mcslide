@@ -35,20 +35,25 @@ class WorkflowState extends Model implements Auditable
 
     public function gates(): HasMany
     {
-        return $this->hasMany(WorkflowGate::class, 'id', 'workflow_state_id');
+        return $this->hasMany(WorkflowGate::class, 'workflow_state_id', 'id');
     }
     
     public function productRanges(): BelongsToMany
     {
         return $this->belongsToMany(ProductRange::class, WorkflowStateProductRange::class, 'workflow_state_id', 'product_range_id');
-        }
-        
-        // public function erpStates(): BelongsToMany
-        // {
-        //     return $this->belongsToMany(ErpState::class, WorkflowStateErpState::class, 'workflow_state_id', 'erp_state_id');
-        // }
-        public function erpStates(): HasMany
-        {
-            return $this->hasMany(WorkflowStateErpState::class, 'id', 'workflow_state_id');
-        }
+    }
+    // public function productRanges(): HasMany
+    // {
+    //     return $this->hasMany(WorkflowStateProductRange::class);
+    // }
+    
+    // public function erpStates(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(ErpState::class, WorkflowStateErpState::class, 'workflow_state_id', 'erp_state_id');
+    // }
+
+    public function erpStates(): HasMany
+    {
+        return $this->hasMany(WorkflowStateErpState::class);
+    }
 }

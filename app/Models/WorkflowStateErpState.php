@@ -12,13 +12,13 @@ class WorkflowStateErpState extends Model
         'id'
     ];
 
-    public function erpState(): HasOne
+    public function erpState(): BelongsTo
     {
-        return $this->hasOne(ErpState::class);
+        return $this->belongsTo(ErpState::class);
     }
 
     public function workflowState(): BelongsTo
     {
-        return $this->belongsTo(WorkflowState::class, 'workflow_state_id', 'id');
+        return $this->belongsTo(WorkflowState::class);
     }
 }
