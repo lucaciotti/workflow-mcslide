@@ -93,23 +93,23 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
         foreach ($departments as $stateDepartment) {
             $count = Task::query()->whereHas('workFlowState', function ($q) use ($stateDepartment) {
                 $q->where('department_id', $stateDepartment->id);
-            })->count();
+            })->where('deleted', false)->where('suspended', false)->where('ended', false)->count();
             $tabs[$stateDepartment->name] = Tab::make()
                 ->badge($count)
                 ->visible($count>0)
-                ->modifyQueryUsing(fn(Builder $query) => $query->whereHas('workFlowState', function ($q) use ($stateDepartment) {
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('deleted', false)->where('suspended', false)->where('ended', false)->whereHas('workFlowState', function ($q) use ($stateDepartment) {
                 $q->where('department_id', $stateDepartment->id);
             }));
         }
         if($existWorflowStatesWithoutDepartment){
             $count = Task::query()->whereNotIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->whereHas('workFlowState', function ($q) {
                 $q->where('department_id', null);
-            })->count();
+            })->where('deleted', false)->where('suspended', false)->where('ended', false)->count();
             $tabs['Senza Reparto!'] = Tab::make()
                 ->badge($count)
                 ->badgeColor('warning')
                 ->visible($count > 0)
-                ->modifyQueryUsing(fn(Builder $query) => $query->whereNotIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->whereHas('workFlowState', function ($q) {
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('deleted', false)->where('suspended', false)->where('ended', false)->whereNotIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->whereHas('workFlowState', function ($q) {
                     $q->where('department_id', null);
                 }));
         }
@@ -121,13 +121,13 @@ class ListTasks extends ListRecords implements HasFilamentTablePresets
         //         ->visible($count>0)
         //         ->modifyQueryUsing(fn(Builder $query) => $query->where('workflow_state_id', $state->id));
         // }
-        $count = Task::query()->where('workflow_state_id', null)->count();
+        $count = Task::query()->where('deleted', false)->where('suspended', false)->where('ended', false)->where('workflow_state_id', null)->count();
         // $count = Task::query()->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id'))->count();
         $tabs['WORKFLOW ASSENTE!'] = Tab::make()
             ->badge($count)
             ->badgeColor('danger')
             ->visible($count>0)
-            ->modifyQueryUsing(fn(Builder $query) => $query->where('workflow_state_id', null));
+            ->modifyQueryUsing(fn(Builder $query) => $query->where('deleted', false)->where('suspended', false)->where('ended', false)->where('workflow_state_id', null));
             // ->modifyQueryUsing(fn(Builder $query) => $query->whereIn('workflow_state_id', $statesNotWorkflow->pluck('id')));
 
         $count = Task::query()->where('suspended', true)->count();
