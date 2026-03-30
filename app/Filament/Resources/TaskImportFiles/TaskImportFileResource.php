@@ -28,10 +28,10 @@ class TaskImportFileResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentArrowUp;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Import Ordini';
+    protected static string | UnitEnum | null $navigationGroup = 'Import Ordini da ERP';
     protected static ?string $recordTitleAttribute = 'filename';
     protected static ?string $modelLabel = 'Import Ordine';
-    protected static ?string $pluralModelLabel = 'Import Ordini';
+    protected static ?string $pluralModelLabel = 'Import Ordini XLS';
 
     public static function form(Schema $schema): Schema
     {

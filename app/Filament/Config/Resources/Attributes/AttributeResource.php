@@ -27,6 +27,7 @@ class AttributeResource extends Resource
     protected static ?string $recordTitleAttribute = 'Attributo';
     protected static ?string $modelLabel = 'attributo';
     protected static ?string $pluralModelLabel = 'attributi';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

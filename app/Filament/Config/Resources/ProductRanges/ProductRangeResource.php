@@ -27,6 +27,7 @@ class ProductRangeResource extends Resource
     protected static ?string $recordTitleAttribute = 'Famiglia Prodotto';
     protected static ?string $modelLabel = 'Famiglia Prodotto';
     protected static ?string $pluralModelLabel = 'Famiglia Prodotti';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

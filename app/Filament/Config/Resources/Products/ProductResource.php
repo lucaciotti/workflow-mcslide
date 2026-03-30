@@ -25,6 +25,7 @@ class ProductResource extends Resource
     protected static ?string $recordTitleAttribute = 'code';
     protected static ?string $modelLabel = 'prodotto';
     protected static ?string $pluralModelLabel = 'prodotti';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {

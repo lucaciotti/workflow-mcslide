@@ -60,11 +60,14 @@ class AppServiceProvider extends ServiceProvider
             $panelSwitch
                 ->labels([
                     'main' => 'Home',
-                    'config' => __('Configurazioni')
+                    'config' => __('Configurazioni'),
+                    'admin' => 'App Maintenance',
                 ]);
+            $panelSwitch->panels(['main', 'config', 'admin']);
             $panelSwitch->icons([
                 'main' => 'heroicon-o-home',
                 'config' => 'heroicon-o-cog-6-tooth',
+                'admin' => 'heroicon-o-cog-6-tooth',
             ], $asImage = false);
             // This would result in an icon/image size of 128 pixels.
             $panelSwitch->iconSize(32);

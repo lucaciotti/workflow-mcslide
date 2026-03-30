@@ -5,6 +5,7 @@ namespace App\Filament\Config\Resources\Suppliers\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class SuppliersTable
@@ -13,7 +14,23 @@ class SuppliersTable
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('code')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('name')
+                    ->searchable(),
+                TextColumn::make('area')
+                    ->searchable(),
+                TextColumn::make('provincia')
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

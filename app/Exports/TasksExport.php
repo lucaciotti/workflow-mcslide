@@ -82,7 +82,12 @@ class TasksExport implements FromQuery, WithMapping, WithHeadings, ShouldAutoSiz
                     array_push($body, $row->$colName->getLabel());
                 } else {
                     if ($subColName){
-                        array_push($body, $row->$colName->$subColName);
+                        try {
+                            array_push($body, $row->$colName->$subColName);
+                        } catch (\Throwable $th) {
+                            array_push($body, null);
+                                //throw $th;
+                        }
                     } else {
                         array_push($body, $row->$colName);
                     }

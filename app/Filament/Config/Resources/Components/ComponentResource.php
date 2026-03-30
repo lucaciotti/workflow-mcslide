@@ -25,6 +25,7 @@ class ComponentResource extends Resource
     protected static ?string $recordTitleAttribute = 'code';
     protected static ?string $modelLabel = 'codice componente';
     protected static ?string $pluralModelLabel = 'codici componenti';
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {

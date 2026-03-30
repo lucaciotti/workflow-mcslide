@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Attribute;
+use App\Models\Product;
 use App\Models\ProductRange;
 use App\Models\Task;
 use App\Models\TaskValuesImportFile;
@@ -78,6 +79,18 @@ class TasksImport implements ToCollection, WithStartRow, SkipsEmptyRows, WithCal
                         $pr = ProductRange::firstOrCreate(['name' => $value]);
                         if ($pr) {
                             $taskDataMap['product_range_id'] = $pr->id;
+                        }
+                    }
+                    continue;
+                }
+                if (str_starts_with($key, 'product_')) {
+                    $posFirstUnd = strpos($key, '_') + 1;
+                    $posSecondUnd = strpos($key, '_', $posFirstUnd);
+                    $t_col = substr($key, $posFirstUnd, $posSecondUnd - $posFirstUnd);
+                    if (in_array($t_col, $this->prRangeDataUpdatable)){
+                        $pr = Product::firstOrCreate(['code' => $value]);
+                        if ($pr) {
+                            $taskDataMap['product_id'] = $pr->id;
                         }
                     }
                     continue;

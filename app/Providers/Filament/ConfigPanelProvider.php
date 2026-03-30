@@ -29,16 +29,16 @@ class ConfigPanelProvider extends PanelProvider
                 FilamentInfoWidget::class,
             ])
             ->plugins([
-                \TomatoPHP\FilamentUsers\FilamentUsersPlugin::make(),
-                FilamentPWAPlugin::make()->allowPWASettings(true),
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
-                \Boquizo\FilamentLogViewer\FilamentLogViewerPlugin::make()
-                    ->navigationGroup('System')
-                    ->navigationSort(2)
-                    // ->navigationIcon(Heroicon::OutlinedDocumentText)
-                    ->navigationLabel('Log Viewer')
-                    // ->authorize(fn(): bool => auth()->user()->can('view-logs')),
-                // Other plugins
+                // \TomatoPHP\FilamentUsers\FilamentUsersPlugin::make(),
+                // FilamentPWAPlugin::make()->allowPWASettings(true),
+                // \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                // \Boquizo\FilamentLogViewer\FilamentLogViewerPlugin::make()
+                //     ->navigationGroup('System')
+                //     ->navigationSort(2)
+                //     // ->navigationIcon(Heroicon::OutlinedDocumentText)
+                //     ->navigationLabel('Log Viewer')
+                //     // ->authorize(fn(): bool => auth()->user()->can('view-logs')),
+                // // Other plugins
             ]);
     }
 }
